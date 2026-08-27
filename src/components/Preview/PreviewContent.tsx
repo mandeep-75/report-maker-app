@@ -1,7 +1,6 @@
 import { useReportStore } from '../../store/reportStore'
 import { sortedSections } from '../../utils/sectionOrder'
 import { renderSectionPage } from './PageRenderer'
-import { isSectionEmpty } from '../../utils/sectionEmpty'
 import { useRef, useState, useLayoutEffect, useMemo } from 'react'
 import type { Report, Section } from '../../data/reportSchema'
 
@@ -9,11 +8,10 @@ export function PreviewContent() {
   const report = useReportStore((s) => s.report)
   const compact = useReportStore((s) => s.compact)
 
-  const sections = useMemo(() => {
-    let s = sortedSections(report.sections).filter((x) => x.visible)
-    if (compact) s = s.filter((x) => !isSectionEmpty(x, report))
-    return s
-  }, [report, compact])
+  const sections = useMemo(
+    () => sortedSections(report.sections).filter((x) => x.visible),
+    [report]
+  )
 
   if (!compact) {
     return (

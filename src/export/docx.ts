@@ -18,7 +18,6 @@ import { saveAs } from 'file-saver'
 import { Report } from '../data/reportSchema'
 import { sortedSections } from '../utils/sectionOrder'
 import { htmlToBlocks } from '../utils/htmlToRuns'
-import { isSectionEmpty } from '../utils/sectionEmpty'
 import { formatDateWithWeekday } from '../utils/date'
 import { exportFileName } from './filename'
 import { useReportStore } from '../store/reportStore'
@@ -101,7 +100,7 @@ function imageTable(
 function buildDocument(report: Report): Document {
   const sections = sortedSections(report.sections).filter((s) => s.visible)
   const compact = useReportStore.getState().compact
-  const activeSections = compact ? sections.filter((s) => !isSectionEmpty(s, report)) : sections
+  const activeSections = sections
   const { eventInfo, resourcePersons } = report
   const children: (Paragraph | Table | typeof PageBreak)[] = []
 

@@ -11,7 +11,6 @@ import { saveAs } from 'file-saver'
 import { Report } from '../data/reportSchema'
 import { sortedSections } from '../utils/sectionOrder'
 import { htmlToBlocks } from '../utils/htmlToRuns'
-import { isSectionEmpty } from '../utils/sectionEmpty'
 import { formatDateWithWeekday } from '../utils/date'
 import { exportFileName } from './filename'
 import { useReportStore } from '../store/reportStore'
@@ -64,15 +63,13 @@ const styles = StyleSheet.create({
 
 function RichText({ html }: { html: string }) {
   const blocks = htmlToBlocks(html)
-  let counter = 0
-  const ordinals = blocks.map((b) => {
-    if (b.type === 'numbered') {
-      counter += 1
-      return counter
-    }
-    counter = 0
-    return 0
-  })
+  const ordinals = blocks.reduce<[number[], number]>(
+    ([acc, n], b) =>
+      b.type === 'numbered'
+        ? [[...acc, n + 1], n + 1]
+        : [[...acc, 0], 0],
+    [[], 0]
+  )[0]
   return (
     <>
       {blocks.map((b, i) => {
@@ -114,7 +111,7 @@ function Gallery({ images, perRow }: { images: string[]; perRow: number }) {
 function ReportDoc({ report }: { report: Report }) {
   const sections = sortedSections(report.sections).filter((s) => s.visible)
   const compact = useReportStore.getState().compact
-  const activeSections = compact ? sections.filter((s) => !isSectionEmpty(s, report)) : sections
+  const activeSections = sections
   const { eventInfo, resourcePersons } = report
 
   const blocks: React.ReactNode[] = []

@@ -113,6 +113,7 @@ export const SECTION_LABELS: Record<SectionType, string> = {
 
 export const DEFAULT_SECTION_ORDER: SectionType[] = [
   'event-info',
+  'resource-person',
   'theme',
   'brochure',
   'summary',

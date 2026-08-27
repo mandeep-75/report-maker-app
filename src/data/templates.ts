@@ -1,6 +1,7 @@
 import {
   Report,
   Section,
+  SectionType,
   DEFAULT_SECTION_ORDER,
   SECTION_LABELS,
   GalleryLayout,
@@ -24,8 +25,8 @@ export function createDefaultEventInfo(): Report['eventInfo'] {
   }
 }
 
-export function createDefaultSections(): Section[] {
-  return DEFAULT_SECTION_ORDER.map((type, index) => ({
+export function createDefaultSections(order: SectionType[] = DEFAULT_SECTION_ORDER): Section[] {
+  return order.map((type, index) => ({
     id: `section-${type}`,
     type,
     visible: true,
@@ -74,11 +75,90 @@ export const CERTIFICATE_LAYOUT_OPTIONS: { value: CertificateLayout; label: stri
   { value: '6', label: '6 per page' },
 ]
 
+export type TemplateCategory =
+  | 'academic'
+  | 'seminar'
+  | 'workshop'
+  | 'competition'
+  | 'celebration'
+  | 'awareness'
+  | 'webinar'
+  | 'activity'
+  | 'custom'
+
+export const TEMPLATE_CATEGORY_LABELS: Record<TemplateCategory, string> = {
+  academic: 'Academic',
+  seminar: 'Seminar',
+  workshop: 'Workshop',
+  competition: 'Competition',
+  celebration: 'Celebration',
+  awareness: 'Awareness',
+  webinar: 'Webinar',
+  activity: 'Activity',
+  custom: 'Custom',
+}
+
+export const TEMPLATE_FILTERS: { value: 'all' | TemplateCategory; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'academic', label: 'Academic' },
+  { value: 'seminar', label: 'Seminar' },
+  { value: 'workshop', label: 'Workshop' },
+  { value: 'custom', label: 'Custom' },
+]
+
+export interface TemplateCover {
+  title: string
+  subtitle: string
+  college: string
+  from: string
+  to: string
+}
+
+interface TemplateConfig {
+  eventInfo?: Partial<Report['eventInfo']>
+  resourcePersons?: Report['resourcePersons']
+  brochure?: Partial<Report['brochure']>
+  summary?: string
+  outcomes?: string[]
+  conclusion?: string
+  organizedBy?: string
+  sectionOrder?: SectionType[]
+  hiddenSections?: SectionType[]
+  snapshotLayout?: GalleryLayout
+  certificateLayout?: CertificateLayout
+}
+
 export interface ReportTemplate {
   id: string
   name: string
   description: string
+  category: TemplateCategory
+  cover: TemplateCover
+  included: string[]
   build: () => Report
+}
+
+function makeReport(cfg: TemplateConfig = {}): Report {
+  const r = createDefaultReport()
+  const order = cfg.sectionOrder ?? DEFAULT_SECTION_ORDER
+  const hidden = new Set(cfg.hiddenSections ?? [])
+  r.sections = order.map((type, index) => ({
+    id: `section-${type}`,
+    type,
+    visible: !hidden.has(type),
+    label: SECTION_LABELS[type],
+    order: index,
+  }))
+  if (cfg.eventInfo) r.eventInfo = { ...r.eventInfo, ...cfg.eventInfo }
+  if (cfg.resourcePersons) r.resourcePersons = cfg.resourcePersons
+  if (cfg.brochure) r.brochure = { ...r.brochure, ...cfg.brochure }
+  if (cfg.summary !== undefined) r.summary = cfg.summary
+  if (cfg.outcomes) r.outcomes = cfg.outcomes
+  if (cfg.conclusion !== undefined) r.conclusion = cfg.conclusion
+  if (cfg.organizedBy !== undefined) r.organizedBy = cfg.organizedBy
+  if (cfg.snapshotLayout) r.snapshotLayout = cfg.snapshotLayout
+  if (cfg.certificateLayout) r.certificateLayout = cfg.certificateLayout
+  return r
 }
 
 const PARTITION_SUMMARY = `The Department of History, Khalsa College Garhdiwala, organised a special programme to commemorate Partition Horrors Remembrance Day on 14 August 2026 at 11:00 AM in the Seminar Hall of the college. The programme was conducted in hybrid mode, allowing students and faculty members to participate both physically and online.
@@ -125,96 +205,162 @@ const SEMINAR_OUTCOMES = [
   'Strengthened the department’s culture of academic engagement and historical inquiry.',
 ]
 
+const placeholderSummary = (event: string) =>
+  `${event} was organised by the department with the active participation of students and faculty members. The programme was designed to engage participants through interactive sessions, discussions and activities that enriched their learning experience.
+
+Replace this text with a detailed account of your event — what happened, who was involved, and why it mattered.`
+
+const placeholderOutcomes = [
+  'Engaged students in meaningful, experience-based learning.',
+  'Provided exposure to new ideas and perspectives.',
+  'Encouraged participation, teamwork and collaboration.',
+  'Strengthened the department’s academic and co-curricular culture.',
+]
+
 export const TEMPLATES: ReportTemplate[] = [
   {
-    id: 'partition-horrors-2026',
-    name: 'Partition Horrors Remembrance Day 2026',
+    id: 'academic-event-report',
+    name: 'Academic Event Report',
     description:
-      'Complete sample report — Department of History, Khalsa College Garhdiwala, commemorating Partition Horrors Remembrance Day with a guest lecture and National Quiz.',
-    build: () => {
-      const r = createDefaultReport()
-      r.eventInfo = {
-        ...r.eventInfo,
-        collegeName: 'KHALSA COLLEGE GARHDIWALA',
-        department: 'DEPARTMENT OF HISTORY',
-        eventName: 'PARTITION HORRORS REMEMBRANCE DAY 2026',
-        theme: 'Remembering the Pain, Honouring the Resilience, Inspiring a Peaceful Tomorrow',
-        date: '2026-08-14',
-        time: '11:00 AM onwards',
-        venue: 'Seminar Hall, Khalsa College Garhdiwala',
-        mode: 'Hybrid',
-        academicSession: '2026–27',
-        organisedBy: 'Department of History, Khalsa College Garhdiwala',
-        tagline: 'Never Forget, Always Remember',
-      }
-      r.resourcePersons = [
-        {
-          id: 'rp-1',
-          name: 'Ms. Anurada',
-          designation: 'HoD',
-          department: 'Department of History',
-          institution: 'Swami Premanand Mahavidyalaya',
-          location: 'Mukerian',
-          photo: null,
+      'Complete sample report with cover, resource person, summary, outcomes, photo gallery, certificates and press coverage. The reusable structure for most college events.',
+    category: 'academic',
+    cover: { title: 'REPORT COVER', subtitle: 'EVENT TITLE', college: 'COLLEGE NAME', from: '#7c5cff', to: '#4f8cff' },
+    included: ['Cover', 'Event Information', 'Resource Person', 'Theme', 'Brochure', 'Summary', 'Key Outcomes', 'Conclusion', 'Organised By', 'Snapshots', 'Certificates', 'Press Coverage'],
+    build: () =>
+      makeReport({
+        eventInfo: {
+          collegeName: 'KHALSA COLLEGE GARHDIWALA',
+          department: 'DEPARTMENT OF HISTORY',
+          eventName: 'PARTITION HORRORS REMEMBRANCE DAY 2026',
+          theme: 'Remembering the Pain, Honouring the Resilience, Inspiring a Peaceful Tomorrow',
+          date: '2026-08-14',
+          time: '11:00 AM onwards',
+          venue: 'Seminar Hall, Khalsa College Garhdiwala',
+          mode: 'Hybrid',
+          academicSession: '2026–27',
+          organisedBy: 'Department of History, Khalsa College Garhdiwala',
+          tagline: 'Never Forget, Always Remember',
         },
-      ]
-      r.brochure = {
-        type: 'upload',
-        dataUrl: null,
-        caption:
-          'Date: 14 August 2026 (Friday)\nTime: 11:00 AM onwards\nVenue: Seminar Hall, Khalsa College Garhdiwala\nMode: Hybrid (Offline + Online)\nOrganised by: Department of History, Khalsa College Garhdiwala\nResource Person: Ms. Anurada, Swami Premanand Mahavidyalaya, Mukerian',
-      }
-      r.summary = PARTITION_SUMMARY
-      r.outcomes = PARTITION_OUTCOMES
-      r.conclusion = PARTITION_CONCLUSION
-      r.organizedBy = 'Department of History\nKhalsa College Garhdiwala'
-      return r
-    },
+        resourcePersons: [
+          {
+            id: 'rp-1',
+            name: 'Ms. Anurada',
+            designation: 'HoD',
+            department: 'Department of History',
+            institution: 'Swami Premanand Mahavidyalaya',
+            location: 'Mukerian',
+            photo: null,
+          },
+        ],
+        brochure: {
+          type: 'upload',
+          dataUrl: null,
+          caption:
+            'Date: 14 August 2026 (Friday)\nTime: 11:00 AM onwards\nVenue: Seminar Hall, Khalsa College Garhdiwala\nMode: Hybrid (Offline + Online)\nOrganised by: Department of History, Khalsa College Garhdiwala\nResource Person: Ms. Anurada, Swami Premanand Mahavidyalaya, Mukerian',
+        },
+        summary: PARTITION_SUMMARY,
+        outcomes: PARTITION_OUTCOMES,
+        conclusion: PARTITION_CONCLUSION,
+        organizedBy: 'Department of History\nKhalsa College Garhdiwala',
+      }),
   },
   {
-    id: 'freedom-struggle-seminar',
-    name: 'National Seminar on Indian Freedom Struggle',
+    id: 'national-seminar',
+    name: 'National Seminar Report',
     description:
-      'Ready-to-edit template — Department of History, Khalsa College Garhdiwala, for seminars, guest lectures and awareness programmes. Replace the content with your own event details.',
-    build: () => {
-      const r = createDefaultReport()
-      r.eventInfo = {
-        ...r.eventInfo,
-        collegeName: 'KHALSA COLLEGE GARHDIWALA',
-        department: 'DEPARTMENT OF HISTORY',
-        eventName: 'NATIONAL SEMINAR ON INDIAN FREEDOM STRUGGLE',
-        theme: 'Revisiting the Sacrifices, Rekindling the Patriotism',
-        date: '2026-09-25',
-        time: '10:00 AM – 1:00 PM',
-        venue: 'Seminar Hall, Khalsa College Garhdiwala',
-        mode: 'Offline',
-        academicSession: '2026–27',
-        organisedBy: 'Department of History, Khalsa College Garhdiwala',
-        tagline: 'Azadi Ka Amrit Mahotsav',
-      }
-      r.resourcePersons = [
-        {
-          id: 'rp-1',
-          name: 'Dr. Harjeet Singh',
-          designation: 'Professor',
-          department: 'Department of History',
-          institution: 'Guru Nanak Dev University',
-          location: 'Amritsar',
-          photo: null,
+      'Ready-to-edit seminar template — guest lectures, expert talks and academic discussions. Replace the content with your own event details.',
+    category: 'seminar',
+    cover: { title: 'SEMINAR', subtitle: 'REPORT', college: 'COLLEGE NAME', from: '#6366f1', to: '#22d3ee' },
+    included: ['Cover', 'Event Information', 'Resource Person', 'Summary', 'Key Outcomes', 'Conclusion', 'Snapshots', 'Certificates'],
+    build: () =>
+      makeReport({
+        hiddenSections: ['theme', 'brochure', 'organized-by', 'press-coverage'],
+        eventInfo: {
+          collegeName: 'KHALSA COLLEGE GARHDIWALA',
+          department: 'DEPARTMENT OF HISTORY',
+          eventName: 'NATIONAL SEMINAR ON INDIAN FREEDOM STRUGGLE',
+          theme: 'Revisiting the Sacrifices, Rekindling the Patriotism',
+          date: '2026-09-25',
+          time: '10:00 AM – 1:00 PM',
+          venue: 'Seminar Hall, Khalsa College Garhdiwala',
+          mode: 'Offline',
+          academicSession: '2026–27',
+          organisedBy: 'Department of History, Khalsa College Garhdiwala',
+          tagline: 'Azadi Ka Amrit Mahotsav',
         },
-      ]
-      r.brochure = {
-        type: 'upload',
-        dataUrl: null,
-        caption:
-          'Date: 25 September 2026\nTime: 10:00 AM – 1:00 PM\nVenue: Seminar Hall, Khalsa College Garhdiwala\nMode: Offline\nOrganised by: Department of History, Khalsa College Garhdiwala\nResource Person: Dr. Harjeet Singh, Guru Nanak Dev University, Amritsar',
-      }
-      r.summary = SEMINAR_SUMMARY
-      r.outcomes = SEMINAR_OUTCOMES
-      r.conclusion = SEMINAR_CONCLUSION
-      r.organizedBy = 'Department of History\nKhalsa College Garhdiwala'
-      return r
-    },
+        resourcePersons: [
+          {
+            id: 'rp-1',
+            name: 'Dr. Harjeet Singh',
+            designation: 'Professor',
+            department: 'Department of History',
+            institution: 'Guru Nanak Dev University',
+            location: 'Amritsar',
+            photo: null,
+          },
+        ],
+        brochure: {
+          type: 'upload',
+          dataUrl: null,
+          caption:
+            'Date: 25 September 2026\nTime: 10:00 AM – 1:00 PM\nVenue: Seminar Hall, Khalsa College Garhdiwala\nMode: Offline\nOrganised by: Department of History, Khalsa College Garhdiwala\nResource Person: Dr. Harjeet Singh, Guru Nanak Dev University, Amritsar',
+        },
+        summary: SEMINAR_SUMMARY,
+        outcomes: SEMINAR_OUTCOMES,
+        conclusion: SEMINAR_CONCLUSION,
+        organizedBy: 'Department of History\nKhalsa College Garhdiwala',
+      }),
+  },
+  {
+    id: 'workshop-report',
+    name: 'Workshop Report',
+    description:
+      'Hands-on workshop template — skill sessions, demonstrations and participant outputs.',
+    category: 'workshop',
+    cover: { title: 'WORKSHOP', subtitle: 'REPORT', college: 'COLLEGE NAME', from: '#f59e0b', to: '#ef4444' },
+    included: ['Cover', 'Event Information', 'Resource Person', 'Summary', 'Key Outcomes', 'Conclusion', 'Snapshots', 'Certificates'],
+    build: () =>
+      makeReport({
+        hiddenSections: ['theme', 'brochure', 'organized-by', 'press-coverage'],
+        eventInfo: {
+          collegeName: 'KHALSA COLLEGE GARHDIWALA',
+          department: 'DEPARTMENT OF COMPUTER SCIENCE',
+          eventName: 'HANDS-ON WORKSHOP ON WEB DEVELOPMENT',
+          theme: 'Learning by Building',
+          date: '2026-10-10',
+          time: '9:30 AM – 4:00 PM',
+          venue: 'Computer Lab, Khalsa College Garhdiwala',
+          mode: 'Offline',
+          academicSession: '2026–27',
+          organisedBy: 'Department of Computer Science',
+          tagline: 'Code. Create. Collaborate.',
+        },
+        resourcePersons: [
+          {
+            id: 'rp-1',
+            name: 'Mr. Ravinder Singh',
+            designation: 'Industry Mentor',
+            department: 'Software Engineering',
+            institution: 'TechNova Solutions',
+            location: 'Jalandhar',
+            photo: null,
+          },
+        ],
+        summary: placeholderSummary('The Hands-on Workshop on Web Development'),
+        outcomes: placeholderOutcomes,
+        conclusion:
+          'The workshop successfully combined theory with practice, leaving participants confident in building their own web projects.',
+      }),
+  },
+  {
+    id: 'custom-report',
+    name: 'Custom Blank Report',
+    description:
+      'Start from the full structure with every section included — hide or reorder anything later.',
+    category: 'custom',
+    cover: { title: 'BLANK', subtitle: 'REPORT', college: 'COLLEGE NAME', from: '#64748b', to: '#0f172a' },
+    included: ['Cover', 'Event Information', 'Resource Person', 'Theme', 'Brochure', 'Summary', 'Key Outcomes', 'Conclusion', 'Organised By', 'Snapshots', 'Certificates', 'Press Coverage'],
+    build: () => makeReport({}),
   },
 ]
 
@@ -223,3 +369,6 @@ export function buildTemplate(id: string): Report | null {
   return t ? t.build() : null
 }
 
+export function createBlankReport(): Report {
+  return makeReport({})
+}
