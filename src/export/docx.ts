@@ -95,7 +95,7 @@ function runs(
   if (rs.length === 0) return [new TextRun({ text: '', font: FONT, size: opts.size ?? DEFAULT_SIZE })]
   return rs.map((r) => {
     const o: any = { text: r.text, font: FONT, size: opts.size ?? DEFAULT_SIZE }
-    if (opts.bold) o.bold = true
+    if (opts.bold || r.bold) o.bold = true
     if (r.italic) o.italics = true
     if (r.underline) o.underline = true
     if (opts.color) o.color = opts.color
