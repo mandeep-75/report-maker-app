@@ -55,7 +55,7 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
     )
 
   return (
-    <div className={cn('rounded border border-border bg-surface', className)}>
+    <div className={cn('flex flex-col rounded border border-border bg-surface', className)}>
       <div className="flex flex-wrap items-center gap-0.5 border-b border-border p-1.5">
         <button className={btn(editor.isActive('bold'))} onClick={() => editor.chain().focus().toggleBold().run()} title="Bold">
           <Bold className="h-4 w-4" />
@@ -100,7 +100,7 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
       </div>
       <EditorContent
         editor={editor}
-        className="prose prose-sm max-w-none p-3 min-h-[160px] focus:outline-none [&_.tiptap]:outline-none [&_.tiptap_p.is-editor-empty:first-child::before]:text-text-muted [&_.tiptap_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.tiptap_p.is-editor-empty:first-child::before]:float-left [&_.tiptap_p.is-editor-empty:first-child::before]:h-0"
+        className="prose prose-sm max-w-none flex-1 overflow-y-auto p-3 min-h-[160px] focus:outline-none [&_.tiptap]:outline-none [&_.tiptap]:h-full [&_.tiptap_p.is-editor-empty:first-child::before]:text-text-muted [&_.tiptap_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.tiptap_p.is-editor-empty:first-child::before]:float-left [&_.tiptap_p.is-editor-empty:first-child::before]:h-0"
       />
     </div>
   )

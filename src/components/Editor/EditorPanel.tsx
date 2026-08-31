@@ -4,6 +4,7 @@ import { EventInfoForm } from './EventInfoForm'
 import { ThemeEditor } from './ThemeEditor'
 import { ResourcePersonForm } from './ResourcePersonForm'
 import { BrochureEditor } from './BrochureEditor'
+import { PhotoEditor } from './PhotoEditor'
 import { SummaryEditor } from './SummaryEditor'
 import { OutcomesEditor } from './OutcomesEditor'
 import { ConclusionEditor } from './ConclusionEditor'
@@ -52,6 +53,8 @@ export function EditorPanel() {
         return <ResourcePersonForm />
       case 'brochure':
         return <BrochureEditor />
+      case 'photo':
+        return <PhotoEditor />
       case 'summary':
         return <SummaryEditor />
       case 'outcomes':
@@ -79,10 +82,12 @@ export function EditorPanel() {
         <Sidebar />
       </div>
       <ScrollArea className="flex-1 p-4">
-        <h2 className="mb-3 text-base font-semibold text-text">
-          {active?.label ?? 'Editor'}
-        </h2>
-        {renderContent()}
+        <div className="flex min-h-full flex-col">
+          <h2 className="mb-3 text-base font-semibold text-text">
+            {active?.label ?? 'Editor'}
+          </h2>
+          <div className="flex flex-1 flex-col">{renderContent()}</div>
+        </div>
       </ScrollArea>
     </div>
   )

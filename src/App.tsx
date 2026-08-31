@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { TopNav } from './components/TopNav'
 import { EditorWorkspace } from './components/EditorWorkspace'
 import { HomeScreen } from './screens/HomeScreen'
@@ -15,15 +16,14 @@ import {
 } from './utils/storage'
 import { createBlankReport, buildTemplate } from './data/templates'
 
-type Screen = 'home' | 'settings' | 'editor'
-
-export default function App() {
-  const [screen, setScreen] = useState<Screen>('home')
-  const [recent, setRecent] = useState<RecentMeta[]>([])
+function AppContent() {
+  useAutosave()
+  const navigate = useNavigate()
+  const location = useLocation()
   const setReport = useReportStore((s) => s.setReport)
   const applyInstitution = useSettings((s) => s.applyInstitution)
   const appearance = useSettings((s) => s.appearance)
-  useAutosave()
+  const [recent, setRecent] = useState<RecentMeta[]>([])
 
   useEffect(() => {
     document.documentElement.classList.toggle('theme-dark', appearance === 'dark')
@@ -34,7 +34,7 @@ export default function App() {
     refreshRecent()
   }, [])
 
-  const goEditor = () => setScreen('editor')
+  const goEditor = () => navigate('/editor')
 
   const handleNew = () => {
     const report = createBlankReport()
@@ -64,15 +64,28 @@ export default function App() {
     deleteRecentReport(id).then(refreshRecent)
   }
 
+  const onTopNav = (s: 'home' | 'settings') => navigate(s === 'settings' ? '/settings' : '/')
+
+  if (location.pathname === '/editor') {
+    return (
+      <div className="flex h-screen flex-col overflow-hidden bg-surface-alt">
+        <EditorWorkspace onBack={() => navigate('/')} />
+        <ToastContainer />
+        <CreditTag />
+      </div>
+    )
+  }
+
+  const activeScreen: 'home' | 'settings' = location.pathname === '/settings' ? 'settings' : 'home'
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-surface-alt">
-      {screen === 'editor' ? (
-        <EditorWorkspace onBack={() => setScreen('home')} />
-      ) : (
-        <>
-          <TopNav active={screen} onNavigate={setScreen} onNew={handleNew} />
-          <main className="flex-1 overflow-hidden">
-            {screen === 'home' && (
+      <TopNav active={activeScreen} onNavigate={onTopNav} />
+      <main className="flex-1 overflow-hidden">
+        <Routes>
+          <Route
+            path="/"
+            element={
               <HomeScreen
                 onNew={handleNew}
                 onUseTemplate={handleUseTemplate}
@@ -80,12 +93,35 @@ export default function App() {
                 onDeleteRecent={handleDeleteRecent}
                 recent={recent}
               />
-            )}
-            {screen === 'settings' && <SettingsScreen />}
-          </main>
-        </>
-      )}
+            }
+          />
+          <Route path="/settings" element={<SettingsScreen />} />
+        </Routes>
+      </main>
       <ToastContainer />
+      <CreditTag />
     </div>
+  )
+}
+
+function CreditTag() {
+  return (
+    <a
+      href="https://mandeep-75.github.io/Mandeep.dev/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="fixed bottom-2 right-3 text-xs text-text-muted opacity-80 hover:opacity-100"
+      title="View portfolio"
+    >
+      made by Mandeep
+    </a>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   )
 }

@@ -31,6 +31,7 @@ export function createDefaultSections(order: SectionType[] = DEFAULT_SECTION_ORD
     type,
     visible: true,
     label: SECTION_LABELS[type],
+    showHeading: true,
     order: index,
   }))
 }
@@ -45,6 +46,7 @@ export function createDefaultReport(): Report {
     eventInfo: createDefaultEventInfo(),
     resourcePersons: [],
     brochure: { type: 'auto', dataUrl: null, caption: '' },
+    photo: { dataUrl: null, caption: '' },
     summary: '',
     outcomes: ['', '', '', ''],
     conclusion: '',
@@ -126,6 +128,7 @@ interface TemplateConfig {
   hiddenSections?: SectionType[]
   snapshotLayout?: GalleryLayout
   certificateLayout?: CertificateLayout
+  customSections?: { title: string; content: string; layout: 'text' | 'list' | 'quote' }[]
 }
 
 export interface ReportTemplate {
@@ -147,8 +150,23 @@ function makeReport(cfg: TemplateConfig = {}): Report {
     type,
     visible: !hidden.has(type),
     label: SECTION_LABELS[type],
+    showHeading: true,
     order: index,
   }))
+  if (cfg.customSections?.length) {
+    cfg.customSections.forEach((c, i) => {
+      const id = `tpl-custom-${i}`
+      r.customSections.push({ id, title: c.title, content: c.content, layout: c.layout, images: [] })
+      r.sections.push({
+        id: `section-custom-${id}`,
+        type: 'custom',
+        visible: true,
+        label: c.title,
+        showHeading: true,
+        order: r.sections.length,
+      })
+    })
+  }
   if (cfg.eventInfo) r.eventInfo = { ...r.eventInfo, ...cfg.eventInfo }
   if (cfg.resourcePersons) r.resourcePersons = cfg.resourcePersons
   if (cfg.brochure) r.brochure = { ...r.brochure, ...cfg.brochure }
@@ -188,6 +206,12 @@ const PARTITION_OUTCOMES = [
   'Encouraged the younger generation to remember the experiences of Partition and learn meaningful lessons from history.',
 ]
 
+const PARTITION_HIGHLIGHTS = `<h2>Expert Lecture</h2><p>An informative and enlightening lecture was delivered by Ms. Anurada from Swami Premanand Mahavidyalaya, Mukerian. She discussed the historical circumstances surrounding the Partition and elaborated on the experiences of people who faced displacement, separation, suffering and loss during this period, focusing on the human dimension of Partition and its lasting social and emotional impact.</p>
+<h2>National Quiz</h2><p>Students were encouraged to participate in the “National Quiz on Partition Horrors Remembrance Day 2026”, organised through MyGov and the Ministry of Culture. The quiz provided an additional learning opportunity, enhanced students’ understanding of the historical significance of Partition, and resulted in Certificates of Participation for participating students.</p>
+<h2>Values and Awareness</h2><p>The programme emphasised the values of peace, compassion, communal harmony, unity and mutual understanding. Students were encouraged to reflect on the consequences of division and violence and to contribute towards a peaceful and harmonious society.</p>
+<h2>Participation</h2><p>The programme witnessed active participation by students and faculty members. The hybrid mode of organisation facilitated wider participation and engagement, and the lecture, awareness activities and National Quiz together provided a meaningful educational experience.</p>
+<h2>Closing Message</h2><p>The event concluded with the message “Never Forget, Always Remember”, honouring the resilience of people affected by Partition and reaffirming the importance of peace, unity and harmony for future generations.</p>`
+
 const SEMINAR_SUMMARY = `The Department of History, Khalsa College Garhdiwala, organised a National Seminar on the Indian Freedom Struggle to acquaint students with the rich legacy of India’s independence movement. The seminar was held in the Seminar Hall of the college and witnessed enthusiastic participation from students and faculty members.
 
 Renowned academicians and historians shared their insights on the contributions of freedom fighters, the role of Punjab in the national movement, and the relevance of these lessons for the present generation. The sessions encouraged critical thinking and a deeper appreciation of the sacrifices made for the nation.
@@ -225,7 +249,7 @@ export const TEMPLATES: ReportTemplate[] = [
       'Complete sample report with cover, resource person, summary, outcomes, photo gallery, certificates and press coverage. The reusable structure for most college events.',
     category: 'academic',
     cover: { title: 'REPORT COVER', subtitle: 'EVENT TITLE', college: 'COLLEGE NAME', from: '#7c5cff', to: '#4f8cff' },
-    included: ['Cover', 'Event Information', 'Resource Person', 'Theme', 'Brochure', 'Summary', 'Key Outcomes', 'Conclusion', 'Organised By', 'Snapshots', 'Certificates', 'Press Coverage'],
+    included: ['Cover', 'Event Information', 'Resource Person', 'Theme', 'Photo', 'Brochure', 'Summary', 'Programme Highlights', 'Key Outcomes', 'Conclusion', 'Organised By', 'Snapshots', 'Certificates', 'Press Coverage'],
     build: () =>
       makeReport({
         eventInfo: {
@@ -262,6 +286,13 @@ export const TEMPLATES: ReportTemplate[] = [
         outcomes: PARTITION_OUTCOMES,
         conclusion: PARTITION_CONCLUSION,
         organizedBy: 'Department of History\nKhalsa College Garhdiwala',
+        customSections: [
+          {
+            title: 'Programme Highlights',
+            content: PARTITION_HIGHLIGHTS,
+            layout: 'text',
+          },
+        ],
       }),
   },
   {
@@ -359,7 +390,7 @@ export const TEMPLATES: ReportTemplate[] = [
       'Start from the full structure with every section included — hide or reorder anything later.',
     category: 'custom',
     cover: { title: 'BLANK', subtitle: 'REPORT', college: 'COLLEGE NAME', from: '#64748b', to: '#0f172a' },
-    included: ['Cover', 'Event Information', 'Resource Person', 'Theme', 'Brochure', 'Summary', 'Key Outcomes', 'Conclusion', 'Organised By', 'Snapshots', 'Certificates', 'Press Coverage'],
+    included: ['Cover', 'Event Information', 'Resource Person', 'Theme', 'Photo', 'Brochure', 'Summary', 'Key Outcomes', 'Conclusion', 'Organised By', 'Snapshots', 'Certificates', 'Press Coverage'],
     build: () => makeReport({}),
   },
 ]

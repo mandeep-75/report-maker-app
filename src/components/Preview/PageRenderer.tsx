@@ -1,3 +1,4 @@
+import { ReactNode } from 'react'
 import { Report, Section, GalleryLayout, CertificateLayout } from '../../data/reportSchema'
 import { formatDateWithWeekday } from '../../utils/date'
 
@@ -25,6 +26,11 @@ function galleryCols(layout: GalleryLayout): string {
   }
 }
 
+function SectionHeading({ section, children }: { section: Section; children: ReactNode }) {
+  if (section.showHeading === false) return null
+  return <div className="section-title">{children}</div>
+}
+
 export function renderSectionPage(section: Section, report: Report) {
   switch (section.type) {
       case 'event-info':
@@ -32,27 +38,29 @@ export function renderSectionPage(section: Section, report: Report) {
     case 'theme':
       return (
         <div>
-          <div className="section-title">Theme</div>
+          <SectionHeading section={section}>Theme</SectionHeading>
           <div style={{ textAlign: 'center', fontSize: 18, fontStyle: 'italic', color: '#1d4ed8', marginTop: 40, lineHeight: 1.6 }}>
             {report.eventInfo.theme || '—'}
           </div>
         </div>
       )
     case 'resource-person':
-      return <ResourcePersonPage report={report} />
+      return <ResourcePersonPage report={report} section={section} />
     case 'brochure':
-      return <BrochurePage report={report} />
+      return <BrochurePage report={report} section={section} />
+    case 'photo':
+      return <PhotoPage report={report} section={section} />
     case 'summary':
       return (
         <div>
-          <div className="section-title">Summary</div>
+          <SectionHeading section={section}>Summary</SectionHeading>
           <div className="prose" dangerouslySetInnerHTML={{ __html: report.summary }} />
         </div>
       )
     case 'outcomes':
       return (
         <div>
-          <div className="section-title">Key Outcomes</div>
+          <SectionHeading section={section}>Key Outcomes</SectionHeading>
           <ul className="outcomes-list">
             {report.outcomes.filter((o) => o.trim()).map((o, i) => (
               <li key={i}>{o}</li>
@@ -63,33 +71,49 @@ export function renderSectionPage(section: Section, report: Report) {
     case 'conclusion':
       return (
         <div>
-          <div className="section-title">Conclusion</div>
+          <SectionHeading section={section}>Conclusion</SectionHeading>
           <div className="prose" dangerouslySetInnerHTML={{ __html: report.conclusion }} />
         </div>
       )
     case 'organized-by':
       return (
         <div>
-          <div className="section-title">Organised By</div>
+          <SectionHeading section={section}>Organised By</SectionHeading>
           <div className="organized-by">
             {report.organizedBy || report.eventInfo.organisedBy || `${report.eventInfo.department}\n${report.eventInfo.collegeName}`}
           </div>
         </div>
       )
     case 'snapshots':
-      return <SnapshotsPage report={report} />
+      return <SnapshotsPage report={report} section={section} />
     case 'certificates':
-      return <CertificatesPage report={report} />
+      return <CertificatesPage report={report} section={section} />
     case 'press-coverage':
-      return <PressPage report={report} />
+      return <PressPage report={report} section={section} />
     case 'custom': {
       const custom = report.customSections.find((c) => `section-custom-${c.id}` === section.id)
       if (!custom) return null
       return (
         <div>
-          <div className="section-title">{custom.title}</div>
+          <SectionHeading section={section}>{custom.title}</SectionHeading>
           {custom.layout === 'gallery' ? (
-            <p className="prose">Gallery layout (images managed in editor).</p>
+            <div className="gallery-grid cols-2">
+              {custom.images.filter((i) => i.dataUrl).map((img) => (
+                <figure key={img.id} className="gallery-item">
+                  <img src={img.dataUrl} alt={img.caption || ''} />
+                  {img.caption && <figcaption className="gallery-caption">{img.caption}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          ) : custom.layout === 'photo' ? (
+            <div className="photo-block">
+              {custom.images.filter((i) => i.dataUrl).map((img) => (
+                <figure key={img.id} className="photo-figure">
+                  <img src={img.dataUrl} alt={img.caption || ''} style={{ width: '100%' }} />
+                  {img.caption && <figcaption style={{ textAlign: 'center', fontSize: 12, color: '#475569', marginTop: 10 }}>{img.caption}</figcaption>}
+                </figure>
+              ))}
+            </div>
           ) : custom.layout === 'quote' ? (
             <div className="quote-block" dangerouslySetInnerHTML={{ __html: custom.content }} />
           ) : (
@@ -151,10 +175,10 @@ function CoverPage({ report }: { report: Report }) {
   )
 }
 
-function ResourcePersonPage({ report }: { report: Report }) {
+function ResourcePersonPage({ report, section }: { report: Report; section: Section }) {
   return (
     <div>
-      <div className="section-title">Resource Person</div>
+      <SectionHeading section={section}>Resource Person</SectionHeading>
       {report.resourcePersons.map((p, i) => (
         <div className="person-block" key={i}>
           {p.photo && <img className="photo" src={p.photo} alt="" />}
@@ -171,11 +195,11 @@ function ResourcePersonPage({ report }: { report: Report }) {
   )
 }
 
-function BrochurePage({ report }: { report: Report }) {
+function BrochurePage({ report, section }: { report: Report; section: Section }) {
   const { brochure } = report
   return (
     <div>
-      <div className="section-title">Brochure</div>
+      <SectionHeading section={section}>Brochure</SectionHeading>
       {brochure.dataUrl ? (
         <div>
           <img src={brochure.dataUrl} alt="Brochure" style={{ width: '100%', border: '1px solid #e2e8f0' }} />
@@ -194,15 +218,38 @@ function BrochurePage({ report }: { report: Report }) {
   )
 }
 
-function SnapshotsPage({ report }: { report: Report }) {
+function PhotoPage({ report, section }: { report: Report; section: Section }) {
+  const { photo } = report
+  return (
+    <div>
+      <SectionHeading section={section}>Photo</SectionHeading>
+      {photo.dataUrl ? (
+        <div>
+          <img src={photo.dataUrl} alt="Photo" style={{ width: '100%', border: '1px solid #e2e8f0' }} />
+          {photo.caption && (
+            <div style={{ textAlign: 'center', fontSize: 12, color: '#475569', marginTop: 10 }}>
+              {photo.caption}
+            </div>
+          )}
+        </div>
+      ) : (
+        photo.caption && (
+          <div style={{ textAlign: 'center', fontSize: 13, color: '#334155' }}>{photo.caption}</div>
+        )
+      )}
+    </div>
+  )
+}
+
+function SnapshotsPage({ report, section }: { report: Report; section: Section }) {
   const { snapshots, snapshotLayout } = report
   const visible = snapshots.filter((s) => s.dataUrl)
-  if (visible.length === 0) return <div className="section-title">Snapshots</div>
+  if (visible.length === 0) return <SectionHeading section={section}>Snapshots</SectionHeading>
   if (snapshotLayout === 'large-small') {
     const [first, ...rest] = visible
     return (
       <div>
-        <div className="section-title">Snapshots</div>
+        <SectionHeading section={section}>Snapshots</SectionHeading>
         <div className="gallery-large-small">
           <div>
             <img src={first.dataUrl} alt="" />
@@ -224,7 +271,7 @@ function SnapshotsPage({ report }: { report: Report }) {
   const shown = visible.slice(0, limit)
   return (
     <div>
-      <div className="section-title">Snapshots</div>
+      <SectionHeading section={section}>Snapshots</SectionHeading>
       <div className={`gallery-grid ${galleryCols(snapshotLayout)}`}>
         {shown.map((s) => (
           <div key={s.id}>
@@ -237,13 +284,13 @@ function SnapshotsPage({ report }: { report: Report }) {
   )
 }
 
-function CertificatesPage({ report }: { report: Report }) {
+function CertificatesPage({ report, section }: { report: Report; section: Section }) {
   const { certificates, certificateLayout } = report
   const visible = certificates.filter((c) => c.dataUrl)
-  if (visible.length === 0) return <div className="section-title">Certificates</div>
+  if (visible.length === 0) return <SectionHeading section={section}>Certificates</SectionHeading>
   return (
     <div>
-      <div className="section-title">Certificates</div>
+      <SectionHeading section={section}>Certificates</SectionHeading>
       <div className={`cert-grid ${certCols[certificateLayout]}`}>
         {visible.map((c) => (
           <div key={c.id}>
@@ -256,12 +303,12 @@ function CertificatesPage({ report }: { report: Report }) {
   )
 }
 
-function PressPage({ report }: { report: Report }) {
+function PressPage({ report, section }: { report: Report; section: Section }) {
   const visible = report.pressCoverage.filter((p) => p.dataUrl)
-  if (visible.length === 0) return <div className="section-title">Press Coverage</div>
+  if (visible.length === 0) return <SectionHeading section={section}>Press Coverage</SectionHeading>
   return (
     <div>
-      <div className="section-title">Press Coverage</div>
+      <SectionHeading section={section}>Press Coverage</SectionHeading>
       {visible.map((p) => (
         <div className="press-item" key={p.id}>
           <img src={p.dataUrl} alt="" />

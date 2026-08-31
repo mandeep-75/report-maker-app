@@ -12,7 +12,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, Eye, EyeOff, Trash2, Plus, FileText } from 'lucide-react'
+import { GripVertical, Eye, EyeOff, Trash2, Plus, FileText, Heading2 } from 'lucide-react'
 import { useReportStore } from '../../store/reportStore'
 import { Section } from '../../data/reportSchema'
 import { sortedSections } from '../../utils/sectionOrder'
@@ -28,12 +28,14 @@ function SectionRow({
   active,
   onSelect,
   onToggleVisibility,
+  onToggleHeading,
   onDelete,
 }: {
   section: Section
   active: boolean
   onSelect: () => void
   onToggleVisibility: () => void
+  onToggleHeading: () => void
   onDelete: () => void
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
@@ -68,6 +70,16 @@ function SectionRow({
       <button
         onClick={(e) => {
           e.stopPropagation()
+          onToggleHeading()
+        }}
+        className={section.showHeading ? 'text-primary hover:text-primary' : 'text-text-muted hover:text-text'}
+        title={section.showHeading ? 'Hide heading' : 'Show heading'}
+      >
+        <Heading2 className="h-3.5 w-3.5" />
+      </button>
+      <button
+        onClick={(e) => {
+          e.stopPropagation()
           onToggleVisibility()
         }}
         className="text-text-muted hover:text-text cursor-pointer"
@@ -94,6 +106,7 @@ export function Sidebar() {
   const activeSectionId = useReportStore((s) => s.activeSectionId)
   const setActiveSection = useReportStore((s) => s.setActiveSection)
   const toggleSectionVisibility = useReportStore((s) => s.toggleSectionVisibility)
+  const toggleSectionHeading = useReportStore((s) => s.toggleSectionHeading)
   const removeSection = useReportStore((s) => s.removeSection)
   const reorderSections = useReportStore((s) => s.reorderSections)
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
@@ -114,7 +127,7 @@ export function Sidebar() {
   const handleAdd = () => {
     const { addCustomSection } = useReportStore.getState()
     const title = newTitle.trim() || 'Custom Section'
-    addCustomSection(title, newType as 'text' | 'gallery' | 'list' | 'quote' | 'table')
+    addCustomSection(title, newType as 'text' | 'gallery' | 'photo' | 'list' | 'quote' | 'table')
     setNewTitle('')
     setAddOpen(false)
   }
@@ -143,6 +156,7 @@ export function Sidebar() {
                 active={section.id === activeSectionId}
                 onSelect={() => setActiveSection(section.id)}
                 onToggleVisibility={() => toggleSectionVisibility(section.id)}
+                onToggleHeading={() => toggleSectionHeading(section.id)}
                 onDelete={() => removeSection(section.id)}
               />
             ))}

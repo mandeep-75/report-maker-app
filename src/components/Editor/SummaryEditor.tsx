@@ -8,11 +8,12 @@ export function SummaryEditor() {
   const summary = useReportStore((s) => s.report.summary)
   const updateSummary = useReportStore((s) => s.updateSummary)
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex h-full flex-col gap-2">
       <RichTextEditor
         value={summary}
         onChange={updateSummary}
         placeholder="Write your event summary..."
+        className="flex-1"
       />
       <div className="flex items-center gap-2">
         <AIStubButton label="AI Generate" />

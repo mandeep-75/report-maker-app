@@ -29,10 +29,10 @@ export function PreviewContent() {
     )
   }
 
-  return <PaginatedFlow sections={sections} report={report} />
+  return <PaginatedFlow sections={sections} report={report} compact={compact} />
 }
 
-function PaginatedFlow({ sections, report }: { sections: Section[]; report: Report }) {
+function PaginatedFlow({ sections, report, compact }: { sections: Section[]; report: Report; compact: boolean }) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const measureRef = useRef<HTMLDivElement>(null)
   const [pageW, setPageW] = useState(0)
@@ -64,8 +64,11 @@ function PaginatedFlow({ sections, report }: { sections: Section[]; report: Repo
       setPages([])
       return
     }
-    setPages(paginate(root, pageW))
-  }, [pageW, sections])
+    const timer = setTimeout(() => {
+      setPages(paginate(root, pageW))
+    }, 0)
+    return () => clearTimeout(timer)
+  }, [pageW, sections, report, compact])
 
   return (
     <div ref={wrapRef} style={{ width: '100%' }}>

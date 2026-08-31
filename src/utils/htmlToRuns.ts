@@ -44,6 +44,11 @@ function robustParse(root: HTMLElement): Block[] {
   }
 
   root.childNodes.forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const t = node.textContent ?? ''
+      if (t.trim()) blocks.push({ type: 'paragraph', runs: [{ text: t }] })
+      return
+    }
     if (node.nodeType !== Node.ELEMENT_NODE) return
     const el = node as HTMLElement
     const tag = el.tagName.toLowerCase()

@@ -49,6 +49,42 @@ export function HomeScreen({
           </h2>
           <RecentReports recent={recent} onOpen={onOpenRecent} onDelete={onDeleteRecent} />
         </section>
+
+        <section className="mt-14 rounded-2xl border border-border bg-surface p-6">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-text-muted">
+            About the Developer
+          </h2>
+          <p className="mt-2 text-sm text-text">
+            Report Maker was built with care to help educators create polished, professional
+            event reports quickly. Made by <span className="font-semibold text-text">Mandeep</span>.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <a
+              href="https://mandeep-75.github.io/Mandeep.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="accent-solid flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              Portfolio ↗
+            </a>
+            <a
+              href="https://github.com/mandeep-75"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-semibold text-text hover:bg-surface-alt"
+            >
+              GitHub ↗
+            </a>
+            <a
+              href="https://www.instagram.com/mandeep.xdev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-semibold text-text hover:bg-surface-alt"
+            >
+              Instagram ↗
+            </a>
+          </div>
+        </section>
       </div>
     </div>
   )

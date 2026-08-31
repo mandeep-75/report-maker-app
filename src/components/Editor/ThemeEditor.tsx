@@ -5,7 +5,7 @@ export function ThemeEditor() {
   const theme = useReportStore((s) => s.report.eventInfo.theme)
   const updateEventInfo = useReportStore((s) => s.updateEventInfo)
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex h-full flex-col gap-2">
       <p className="text-xs text-text-muted">
         A single, central thematic statement shown on its own page.
       </p>
@@ -14,7 +14,7 @@ export function ThemeEditor() {
         value={theme}
         onChange={(e) => updateEventInfo({ theme: e.target.value })}
         placeholder="e.g. Remembering the Pain, Honouring the Resilience, Inspiring a Peaceful Tomorrow"
-        rows={4}
+        className="flex-1"
       />
     </div>
   )

@@ -10,6 +10,7 @@ export type SectionType =
   | 'snapshots'
   | 'certificates'
   | 'press-coverage'
+  | 'photo'
   | 'custom'
 
 export interface Section {
@@ -18,6 +19,7 @@ export interface Section {
   visible: boolean
   label: string
   order: number
+  showHeading?: boolean
 }
 
 export interface EventInfo {
@@ -69,11 +71,17 @@ export interface Brochure {
   caption: string
 }
 
+export interface Photo {
+  dataUrl: string | null
+  caption: string
+}
+
 export interface CustomSection {
   id: string
   title: string
   content: string
-  layout: 'text' | 'gallery' | 'list' | 'quote' | 'table'
+  layout: 'text' | 'gallery' | 'photo' | 'list' | 'quote' | 'table'
+  images: ImageItem[]
 }
 
 export interface Report {
@@ -84,6 +92,7 @@ export interface Report {
   eventInfo: EventInfo
   resourcePersons: ResourcePerson[]
   brochure: Brochure
+  photo: Photo
   summary: string
   outcomes: string[]
   conclusion: string
@@ -108,6 +117,7 @@ export const SECTION_LABELS: Record<SectionType, string> = {
   snapshots: 'Snapshots',
   certificates: 'Certificates',
   'press-coverage': 'Press Coverage',
+  photo: 'Photo',
   custom: 'Custom Section',
 }
 
@@ -115,6 +125,7 @@ export const DEFAULT_SECTION_ORDER: SectionType[] = [
   'event-info',
   'resource-person',
   'theme',
+  'photo',
   'brochure',
   'summary',
   'outcomes',

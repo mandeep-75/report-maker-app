@@ -120,6 +120,41 @@ export function SettingsScreen() {
             </p>
           </div>
         </section>
+
+        <section className="mt-8 rounded-xl border border-border bg-surface p-4">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-text-muted">
+            About
+          </h2>
+          <p className="mt-2 text-sm text-text">
+            Report Maker · Built by <span className="font-semibold text-text">Mandeep</span>
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <a
+              href="https://mandeep-75.github.io/Mandeep.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-primary hover:underline"
+            >
+              Portfolio
+            </a>
+            <a
+              href="https://github.com/mandeep-75"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-primary hover:underline"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://www.instagram.com/mandeep.xdev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-primary hover:underline"
+            >
+              Instagram
+            </a>
+          </div>
+        </section>
       </div>
     </div>
   )

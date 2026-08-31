@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Check, Eye, Plus } from 'lucide-react'
 import { ReportTemplate, TemplateCover } from '../data/templates'
 
@@ -25,30 +24,21 @@ export function TemplateCoverPreview({ cover, className }: { cover: TemplateCove
 
 export function TemplateCard({
   template,
-  onUse,
   onPreview,
 }: {
   template: ReportTemplate
-  onUse: () => void
   onPreview: () => void
 }) {
-  const [hover, setHover] = useState(false)
   return (
-    <div
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-surface transition-all hover:border-primary"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+    <button
+      onClick={onPreview}
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-xl border border-border bg-surface text-left transition-all hover:border-primary"
     >
       <div className="relative aspect-[210/260] p-3">
         <TemplateCoverPreview cover={template.cover} className="h-full w-full" />
-        {hover && (
-          <button
-            onClick={onPreview}
-            className="absolute inset-3 flex items-center justify-center gap-1.5 rounded-md bg-black/55 text-sm font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 cursor-pointer"
-          >
-            <Eye className="h-4 w-4" /> Preview
-          </button>
-        )}
+        <div className="absolute inset-3 flex items-center justify-center gap-1.5 rounded-md bg-black/55 text-sm font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
+          <Eye className="h-4 w-4" /> Click to Preview
+        </div>
       </div>
       <div className="flex flex-col gap-2 border-t border-border p-3">
         <div>
@@ -57,14 +47,8 @@ export function TemplateCard({
             {template.description}
           </div>
         </div>
-        <button
-          onClick={onUse}
-          className="accent-solid flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer"
-        >
-          <Plus className="h-4 w-4" /> Use Template
-        </button>
       </div>
-    </div>
+    </button>
   )
 }
 
