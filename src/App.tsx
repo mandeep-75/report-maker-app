@@ -14,7 +14,7 @@ import {
   deleteRecentReport,
   RecentMeta,
 } from './utils/storage'
-import { createBlankReport, buildTemplate } from './data/templates'
+import { createBlankReport, buildTemplate, mergeReport } from './data/templates'
 
 function AppContent() {
   useAutosave()
@@ -64,6 +64,23 @@ function AppContent() {
     deleteRecentReport(id).then(refreshRecent)
   }
 
+  const handleImportJson = (text: string) => {
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(text)
+    } catch {
+      alert('The file is not valid JSON. Please choose a report .json file.')
+      return
+    }
+    const report = mergeReport(parsed)
+    if (!report) {
+      alert('Could not read this file as a report. Please choose a valid report .json file.')
+      return
+    }
+    setReport(report)
+    goEditor()
+  }
+
   const onTopNav = (s: 'home' | 'settings') => navigate(s === 'settings' ? '/settings' : '/')
 
   if (location.pathname === '/editor') {
@@ -91,6 +108,7 @@ function AppContent() {
                 onUseTemplate={handleUseTemplate}
                 onOpenRecent={handleOpenRecent}
                 onDeleteRecent={handleDeleteRecent}
+                onImportJson={handleImportJson}
                 recent={recent}
               />
             }

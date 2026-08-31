@@ -51,13 +51,13 @@ function blocksToParagraphs(html: string): Paragraph[] {
     if (b.type === 'heading1')
       return new Paragraph({
         heading: HeadingLevel.HEADING_1,
-        children: runs(b.runs),
+        children: runs(b.runs, { size: HEADING_SIZE, bold: true }),
         spacing: { before: 240, after: 120, line: LINE_SPACING },
       })
     if (b.type === 'heading2')
       return new Paragraph({
         heading: HeadingLevel.HEADING_2,
-        children: runs(b.runs),
+        children: runs(b.runs, { size: HEADING2_SIZE, bold: true }),
         spacing: { before: 200, after: 100, line: LINE_SPACING },
       })
     if (b.type === 'bullet')
@@ -88,14 +88,18 @@ function blocksToParagraphs(html: string): Paragraph[] {
   })
 }
 
-function runs(rs: { text: string; bold?: boolean; italic?: boolean; underline?: boolean }[]): TextRun[] {
-  if (rs.length === 0) return [new TextRun('')]
+function runs(
+  rs: { text: string; bold?: boolean; italic?: boolean; underline?: boolean }[],
+  opts: { size?: number; bold?: boolean; color?: string } = {}
+): TextRun[] {
+  if (rs.length === 0) return [new TextRun({ text: '', font: FONT, size: opts.size ?? DEFAULT_SIZE })]
   return rs.map((r) => {
-    const opts: any = { text: r.text, font: FONT, size: DEFAULT_SIZE }
-    if (r.bold) opts.bold = true
-    if (r.italic) opts.italics = true
-    if (r.underline) opts.underline = true
-    return new TextRun(opts)
+    const o: any = { text: r.text, font: FONT, size: opts.size ?? DEFAULT_SIZE }
+    if (opts.bold) o.bold = true
+    if (r.italic) o.italics = true
+    if (r.underline) o.underline = true
+    if (opts.color) o.color = opts.color
+    return new TextRun(o)
   })
 }
 
@@ -116,8 +120,8 @@ function buildDocument(report: Report): Document {
     return [
       new Paragraph({
         heading: HeadingLevel.HEADING_1,
-        alignment: AlignmentType.LEFT,
-        children: [new TextRun({ text, bold: true, font: FONT, size: HEADING_SIZE })],
+        alignment: AlignmentType.CENTER,
+        children: [new TextRun({ text: text.toUpperCase(), bold: true, font: FONT, size: HEADING_SIZE })],
         spacing: { before: 240, after: 120, line: LINE_SPACING },
       }),
     ]
@@ -131,7 +135,7 @@ function buildDocument(report: Report): Document {
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { after: PARAGRAPH_AFTER, line: LINE_SPACING },
-            children: [new TextRun({ text: report.eventInfo.theme || '—', italics: true, font: FONT, size: 26 })],
+            children: [new TextRun({ text: report.eventInfo.theme || '—', italics: true, color: '1D4ED8', font: FONT, size: 26 })],
           })
         )
         break
@@ -145,7 +149,7 @@ function buildDocument(report: Report): Document {
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { after: 60, line: LINE_SPACING },
-            children: [new TextRun({ text: eventInfo.department.toUpperCase(), bold: true, font: FONT, size: 28 })],
+            children: [new TextRun({ text: eventInfo.department.toUpperCase(), font: FONT, size: 28 })],
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
@@ -155,7 +159,7 @@ function buildDocument(report: Report): Document {
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { after: 60, line: LINE_SPACING },
-            children: [new TextRun({ text: 'REPORT ON', bold: true, font: FONT, size: 30 })],
+            children: [new TextRun({ text: 'REPORT ON', font: FONT, size: 30 })],
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
@@ -187,7 +191,7 @@ function buildDocument(report: Report): Document {
               alignment: AlignmentType.LEFT,
               spacing: { after: 40, line: LINE_SPACING },
               children: [
-                new TextRun({ text: `${l.label}: `, bold: true, font: FONT, size: DEFAULT_SIZE }),
+                new TextRun({ text: `${l.label}: `, font: FONT, size: DEFAULT_SIZE }),
                 new TextRun({ text: l.value, font: FONT, size: DEFAULT_SIZE }),
               ],
             })
@@ -198,7 +202,7 @@ function buildDocument(report: Report): Document {
             new Paragraph({
               alignment: AlignmentType.CENTER,
               spacing: { after: PARAGRAPH_AFTER, line: LINE_SPACING },
-              children: [new TextRun({ text: `"${eventInfo.tagline}"`, italics: true, bold: true, font: FONT, size: 26 })],
+              children: [new TextRun({ text: `"${eventInfo.tagline}"`, italics: true, color: '475569', font: FONT, size: 26 })],
             })
           )
         break
@@ -209,7 +213,7 @@ function buildDocument(report: Report): Document {
           children.push(
             new Paragraph({
               spacing: { after: 20, line: LINE_SPACING },
-              children: [new TextRun({ text: p.name, bold: true, font: FONT, size: DEFAULT_SIZE })],
+              children: [new TextRun({ text: p.name, font: FONT, size: DEFAULT_SIZE })],
             }),
             new Paragraph({
               spacing: { after: 20, line: LINE_SPACING },
@@ -308,7 +312,6 @@ function buildDocument(report: Report): Document {
             children: [
               new TextRun({
                 text: report.organizedBy || eventInfo.organisedBy || `${eventInfo.department}\n${eventInfo.collegeName}`,
-                bold: true,
                 font: FONT,
                 size: DEFAULT_SIZE,
               }),
@@ -351,7 +354,7 @@ function buildDocument(report: Report): Document {
         break
       }
       case 'certificates': {
-        children.push(...sectionTitle(section, 'Certificates of QUIZ Competition'))
+        children.push(...sectionTitle(section, 'Certificates'))
         const imgs = report.certificates.filter((c) => c.dataUrl)
         if (imgs.length) {
           const rows: TableRow[] = []
@@ -406,7 +409,7 @@ function buildDocument(report: Report): Document {
                       ? new Paragraph({
                           alignment: AlignmentType.CENTER,
                           spacing: { after: 20, line: LINE_SPACING },
-                          children: [new TextRun({ text: p.publication, bold: true, font: FONT, size: 20 })],
+                          children: [new TextRun({ text: p.publication, font: FONT, size: 20 })],
                         })
                       : new Paragraph({ spacing: { after: 20 }, children: [] }),
                     p.caption

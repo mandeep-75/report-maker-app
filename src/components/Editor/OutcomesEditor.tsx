@@ -23,7 +23,7 @@ export function OutcomesEditor() {
               value={o}
               onChange={(e) => updateOutcome(i, e.target.value)}
               placeholder={`Key outcome ${i + 1}`}
-              className="flex-1"
+              containerClassName="flex-1 min-w-0"
             />
             <button
               onClick={() => removeOutcome(i)}

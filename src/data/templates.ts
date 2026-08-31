@@ -403,3 +403,29 @@ export function buildTemplate(id: string): Report | null {
 export function createBlankReport(): Report {
   return makeReport({})
 }
+
+export function mergeReport(input: unknown): Report | null {
+  if (!input || typeof input !== 'object') return null
+  const base = createBlankReport()
+  const src = input as Partial<Report>
+  const merged: Report = {
+    ...base,
+    ...src,
+    eventInfo: { ...base.eventInfo, ...(src.eventInfo ?? {}) },
+    sections: Array.isArray(src.sections)
+      ? src.sections.map((s, i) => ({
+          ...base.sections[i % base.sections.length],
+          ...s,
+          order: typeof s.order === 'number' ? s.order : i,
+        }))
+      : base.sections,
+    resourcePersons: Array.isArray(src.resourcePersons) ? src.resourcePersons : base.resourcePersons,
+    outcomes: Array.isArray(src.outcomes) ? src.outcomes : base.outcomes,
+    snapshots: Array.isArray(src.snapshots) ? src.snapshots : base.snapshots,
+    certificates: Array.isArray(src.certificates) ? src.certificates : base.certificates,
+    pressCoverage: Array.isArray(src.pressCoverage) ? src.pressCoverage : base.pressCoverage,
+    customSections: Array.isArray(src.customSections) ? src.customSections : base.customSections,
+    updatedAt: new Date().toISOString(),
+  }
+  return merged
+}

@@ -6,11 +6,12 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string
   error?: string
   icon?: 'calendar' | null
+  containerClassName?: string
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, icon, type, ...props }, ref) => (
-    <div className="flex flex-col gap-1">
+  ({ className, containerClassName, label, error, icon, type, ...props }, ref) => (
+    <div className={cn('flex min-w-0 flex-col gap-1', containerClassName)}>
       {label && <label className="text-xs font-medium text-text-muted">{label}</label>}
       <div className="relative">
         <input
