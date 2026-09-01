@@ -5,15 +5,15 @@
  * consistently.
  */
 
-export const MM_TO_PT = 72 / 25.4
-export const MM_TO_TWIP = 1440 / 25.4
+const MM_TO_PT = 72 / 25.4
+const MM_TO_TWIP = 1440 / 25.4
 
-export const PAGE = {
+const PAGE = {
   widthMm: 210,
   heightMm: 297,
 } as const
 
-export const MARGINS = {
+const MARGINS = {
   topMm: 19,
   bottomMm: 19,
   leftMm: 20,
@@ -80,12 +80,6 @@ export function spacing(ctx: LayoutContext) {
 
 /** Keep a heading with at least the first line of its content. */
 export const HEADING_KEEP_PT = 22
-/** Orphan/widow guard for body paragraphs (2 lines minimum per page). */
-export const MIN_LINES_PER_PAGE = 2
-
-export function ptToMm(pt: number): number {
-  return pt / MM_TO_PT
-}
 
 export function mmToPt(mm: number): number {
   return mm * MM_TO_PT

@@ -46,14 +46,3 @@ export const COLOR = {
   border: '#d1d5db',
   tableHeaderBg: '#eef2ff',
 } as const
-
-/** Role → style map consumed by both renderers. */
-export const PARAGRAPH_STYLES = {
-  body: {},
-  caption: { size: TYPE.caption, color: COLOR.caption, align: 'center' as const },
-  theme: { size: TYPE.theme, color: COLOR.accent, italic: true, align: 'center' as const },
-  centered: { align: 'center' as const },
-  centeredBold: { align: 'center' as const, bold: true },
-  personMeta: { size: TYPE.personMeta },
-  labelValue: {},
-} as const

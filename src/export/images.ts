@@ -31,7 +31,7 @@ interface ParsedDataUrl {
   bytes: Uint8Array
 }
 
-export function decodeDataUrl(dataUrl: string): ParsedDataUrl | null {
+function decodeDataUrl(dataUrl: string): ParsedDataUrl | null {
   const comma = dataUrl.indexOf(',')
   if (comma === -1) return null
   const header = dataUrl.slice(0, comma)
@@ -48,7 +48,7 @@ export function decodeDataUrl(dataUrl: string): ParsedDataUrl | null {
 }
 
 /** Validate that the payload actually decodes as the declared image type. */
-export function sniff(dataUrl: string): ImageInfo | null {
+function sniff(dataUrl: string): ImageInfo | null {
   const parsed = decodeDataUrl(dataUrl)
   if (!parsed) return null
   const { mime, bytes } = parsed
@@ -67,12 +67,12 @@ export function sniff(dataUrl: string): ImageInfo | null {
   return null
 }
 
-export function isPng(bytes: Uint8Array): boolean {
+function isPng(bytes: Uint8Array): boolean {
   if (bytes.length < 8) return false
   return bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47
 }
 
-export function isJpeg(bytes: Uint8Array): boolean {
+function isJpeg(bytes: Uint8Array): boolean {
   return bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff
 }
 
