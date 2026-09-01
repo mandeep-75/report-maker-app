@@ -7,7 +7,7 @@ import { cn } from '../utils/cn'
 
 export function SettingsScreen() {
   const settings = useSettings()
-  const { appearance, pageFormat, orientation, collegeName, department, logo } = settings
+  const { appearance, collegeName, department, logo } = settings
 
   const onLogo = async (file: File) => {
     const url = await fileToDataUrl(file)
@@ -52,22 +52,15 @@ export function SettingsScreen() {
           <div className="grid grid-cols-2 gap-3">
             <Select
               label="Page Size"
-              value={pageFormat}
-              onChange={(e) => settings.setPageFormat(e.target.value)}
-              options={[
-                { value: 'A4', label: 'A4' },
-                { value: 'A3', label: 'A3' },
-                { value: 'Letter', label: 'Letter' },
-              ]}
+              value="A4"
+              onChange={() => {}}
+              options={[{ value: 'A4', label: 'A4' }]}
             />
             <Select
               label="Orientation"
-              value={orientation}
-              onChange={(e) => settings.setOrientation(e.target.value)}
-              options={[
-                { value: 'Portrait', label: 'Portrait' },
-                { value: 'Landscape', label: 'Landscape' },
-              ]}
+              value="Portrait"
+              onChange={() => {}}
+              options={[{ value: 'Portrait', label: 'Portrait' }]}
             />
           </div>
         </section>

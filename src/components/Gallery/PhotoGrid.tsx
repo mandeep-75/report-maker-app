@@ -45,7 +45,7 @@ export function GalleryGrid({ images, layout, onRemove, onCaption }: GalleryGrid
           )}
         </div>
         <div className="grid grid-cols-2 gap-2">
-          {rest.slice(0, 2).map((img) => (
+          {rest.map((img) => (
             <div key={img.id} className="relative">
               <img src={img.dataUrl} alt="" className="h-28 w-full rounded border border-border object-cover" />
               {onRemove && (
@@ -63,11 +63,9 @@ export function GalleryGrid({ images, layout, onRemove, onCaption }: GalleryGrid
     )
   }
 
-  const limit = layout === 'full' ? 1 : Number(layout)
-
   return (
     <div className={cn('grid gap-2', gridClass[layout])}>
-      {images.slice(0, limit).map((img) => (
+      {images.map((img) => (
         <div key={img.id} className="relative flex flex-col gap-1">
           <div className="relative">
             <img

@@ -8,12 +8,12 @@ interface ReportStore {
   previewZoom: number
   previewPage: number
   hasLoadedProject: boolean
-  compact: boolean
+  hydrated: boolean
 
   setReport: (report: Report) => void
   resetReport: () => void
   markLoaded: () => void
-  setCompact: (v: boolean) => void
+  setHydrated: (v: boolean) => void
 
   updateEventInfo: (updates: Partial<Report['eventInfo']>) => void
 
@@ -74,7 +74,7 @@ export const useReportStore = create<ReportStore>()(
     previewZoom: 1,
       previewPage: 0,
       hasLoadedProject: false,
-      compact: true,
+      hydrated: false,
 
       setReport: (report) => set({ report, hasLoadedProject: true, previewPage: 0 }),
       resetReport: () =>
@@ -86,7 +86,7 @@ export const useReportStore = create<ReportStore>()(
         }),
       markLoaded: () => set({ hasLoadedProject: true }),
 
-      setCompact: (v) => set({ compact: v }),
+      setHydrated: (v) => set({ hydrated: v }),
 
       updateEventInfo: (updates) =>
         set((state) => ({

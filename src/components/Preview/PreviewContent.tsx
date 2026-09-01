@@ -6,33 +6,16 @@ import type { Report, Section } from '../../data/reportSchema'
 
 export function PreviewContent() {
   const report = useReportStore((s) => s.report)
-  const compact = useReportStore((s) => s.compact)
 
   const sections = useMemo(
     () => sortedSections(report.sections).filter((x) => x.visible),
     [report]
   )
 
-  if (!compact) {
-    return (
-      <>
-        {sections.map((section) => {
-          const content = renderSectionPage(section, report)
-          if (content === null) return null
-          return (
-            <div className="page page-single" id={`sec-${section.id}`} key={section.id}>
-              {content}
-            </div>
-          )
-        })}
-      </>
-    )
-  }
-
-  return <PaginatedFlow sections={sections} report={report} compact={compact} />
+  return <PaginatedFlow sections={sections} report={report} />
 }
 
-function PaginatedFlow({ sections, report, compact }: { sections: Section[]; report: Report; compact: boolean }) {
+function PaginatedFlow({ sections, report }: { sections: Section[]; report: Report }) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const measureRef = useRef<HTMLDivElement>(null)
   const [pageW, setPageW] = useState(0)
@@ -68,7 +51,7 @@ function PaginatedFlow({ sections, report, compact }: { sections: Section[]; rep
       setPages(paginate(root, pageW))
     }, 0)
     return () => clearTimeout(timer)
-  }, [pageW, sections, report, compact])
+  }, [pageW, sections, report])
 
   return (
     <div ref={wrapRef} style={{ width: '100%' }}>
@@ -94,6 +77,31 @@ function cloneEl(n: HTMLElement): HTMLElement {
   return n.cloneNode(true) as HTMLElement
 }
 
+function isBreak(el: HTMLElement | null): boolean {
+  return !!(
+    el?.style &&
+    (el.style.pageBreakBefore === 'always' || el.style.breakBefore === 'page')
+  )
+}
+
+// A fragment must start on a new page if it (or its first child element)
+// carries a page-break marker. Wrappers re-created during pagination keep
+// their leading child, so checking the first element preserves the intent.
+// A fragment must start on a new page if it (or any of its leading ancestor
+// elements) carries a page-break marker. Wrappers re-created during
+// pagination keep their leading child, so descending the first-child chain
+// preserves the intent through the block > section > grid nesting.
+function startsBreak(el: HTMLElement | null): boolean {
+  let cur: HTMLElement | null = el
+  let depth = 0
+  while (cur && depth < 8) {
+    if (isBreak(cur)) return true
+    cur = cur.firstElementChild as HTMLElement | null
+    depth++
+  }
+  return false
+}
+
 // Split `node` into cloned fragments that each fit within pageH, preserving
 // wrapper elements so descendant-selector styles (.prose p, .gallery-grid img…) survive.
 function fragmentNode(node: HTMLElement, pageH: number, scratch: HTMLElement, out: HTMLElement[]) {
@@ -107,7 +115,7 @@ function fragmentNode(node: HTMLElement, pageH: number, scratch: HTMLElement, ou
     return
   }
 
-  const childFrags: { el: HTMLElement; h: number }[] = []
+  const childFrags: { el: HTMLElement; h: number; breaks: boolean }[] = []
   for (const k of kids) {
     const frags: HTMLElement[] = []
     fragmentNode(k, pageH, scratch, frags)
@@ -115,7 +123,7 @@ function fragmentNode(node: HTMLElement, pageH: number, scratch: HTMLElement, ou
       scratch.appendChild(f)
       const h = f.offsetHeight
       scratch.removeChild(f)
-      childFrags.push({ el: f, h })
+      childFrags.push({ el: f, h, breaks: startsBreak(f) })
     }
   }
 
@@ -124,9 +132,11 @@ function fragmentNode(node: HTMLElement, pageH: number, scratch: HTMLElement, ou
     const wrapper = cloneEl(node)
     wrapper.innerHTML = ''
     let used = 0
-    while (i < childFrags.length && (used === 0 || used + childFrags[i].h <= pageH)) {
-      wrapper.appendChild(childFrags[i].el)
-      used += childFrags[i].h
+    while (i < childFrags.length) {
+      const cf = childFrags[i]
+      if (used > 0 && (cf.breaks || used + cf.h > pageH)) break
+      wrapper.appendChild(cf.el)
+      used += cf.h
       i++
     }
     out.push(wrapper)
@@ -162,7 +172,7 @@ function paginate(root: HTMLElement, pageW: number): string[][] {
   let used = 0
   for (let i = 0; i < frags.length; i++) {
     const h = heights[i]
-    if (used > 0 && used + h > pageH) {
+    if (used > 0 && (startsBreak(frags[i]) || used + h > pageH)) {
       pi++
       used = 0
       pages.push([])

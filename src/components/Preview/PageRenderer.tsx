@@ -246,59 +246,82 @@ function SnapshotsPage({ report, section }: { report: Report; section: Section }
   const visible = snapshots.filter((s) => s.dataUrl)
   if (visible.length === 0) return <SectionHeading section={section}>Snapshots</SectionHeading>
   if (snapshotLayout === 'large-small') {
-    const [first, ...rest] = visible
     return (
       <div>
         <SectionHeading section={section}>Snapshots</SectionHeading>
-        <div className="gallery-large-small">
-          <div>
-            <img src={first.dataUrl} alt="" />
-            {first.caption && <div className="caption">{first.caption}</div>}
-          </div>
-          <div className="small-col">
-            {rest.slice(0, 2).map((s) => (
-              <div key={s.id}>
-                <img src={s.dataUrl} alt="" />
-                {s.caption && <div className="caption">{s.caption}</div>}
+        {chunk(visible, 3).map((group, gi) => {
+          const [first, ...rest] = group
+          return (
+            <div key={gi} className="gallery-large-small" style={gi > 0 ? { pageBreakBefore: 'always', breakBefore: 'page' } : undefined}>
+              <div>
+                <img src={first.dataUrl} alt="" />
+                {first.caption && <div className="caption">{first.caption}</div>}
               </div>
-            ))}
-          </div>
-        </div>
+              <div className="small-col">
+                {rest.map((s) => (
+                  <div key={s.id}>
+                    <img src={s.dataUrl} alt="" />
+                    {s.caption && <div className="caption">{s.caption}</div>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        })}
       </div>
     )
   }
-  const limit = snapshotLayout === 'full' ? 1 : Number(snapshotLayout)
-  const shown = visible.slice(0, limit)
+  const perPage = snapshotLayout === 'full' ? 1 : Number(snapshotLayout)
   return (
     <div>
       <SectionHeading section={section}>Snapshots</SectionHeading>
-      <div className={`gallery-grid ${galleryCols(snapshotLayout)}`}>
-        {shown.map((s) => (
-          <div key={s.id}>
-            <img src={s.dataUrl} alt="" />
-            {s.caption && <div className="caption">{s.caption}</div>}
-          </div>
-        ))}
-      </div>
+      {chunk(visible, perPage).map((group, gi) => (
+        <div
+          key={gi}
+          className={`gallery-grid ${galleryCols(snapshotLayout)}`}
+          style={gi > 0 ? { pageBreakBefore: 'always', breakBefore: 'page' } : undefined}
+        >
+          {group.map((s) => (
+            <div key={s.id}>
+              <img src={s.dataUrl} alt="" />
+              {s.caption && <div className="caption">{s.caption}</div>}
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   )
+}
+
+function chunk<T>(arr: T[], size: number): T[][] {
+  if (size <= 0) return [arr]
+  const out: T[][] = []
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size))
+  return out
 }
 
 function CertificatesPage({ report, section }: { report: Report; section: Section }) {
   const { certificates, certificateLayout } = report
   const visible = certificates.filter((c) => c.dataUrl)
   if (visible.length === 0) return <SectionHeading section={section}>Certificates</SectionHeading>
+  const perPage = Number(certificateLayout)
   return (
     <div>
       <SectionHeading section={section}>Certificates</SectionHeading>
-      <div className={`cert-grid ${certCols[certificateLayout]}`}>
-        {visible.map((c) => (
-          <div key={c.id}>
-            <img src={c.dataUrl} alt="" />
-            {c.caption && <div className="caption">{c.caption}</div>}
-          </div>
-        ))}
-      </div>
+      {chunk(visible, perPage).map((group, gi) => (
+        <div
+          key={gi}
+          className={`cert-grid ${certCols[certificateLayout]}`}
+          style={gi > 0 ? { pageBreakBefore: 'always', breakBefore: 'page' } : undefined}
+        >
+          {group.map((c) => (
+            <div key={c.id}>
+              <img src={c.dataUrl} alt="" />
+              {c.caption && <div className="caption">{c.caption}</div>}
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   )
 }

@@ -12,6 +12,13 @@ dist
 dist-ssr
 *.local
 
+# Export test harness outputs
+test/out
+test/cjs
+
+# Local tooling
+.playwright-mcp
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

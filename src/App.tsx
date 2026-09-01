@@ -11,6 +11,7 @@ import { useSettings } from './store/settingsStore'
 import {
   listRecentReports,
   loadRecentReport,
+  loadAutosave,
   deleteRecentReport,
   RecentMeta,
 } from './utils/storage'
@@ -21,6 +22,7 @@ function AppContent() {
   const navigate = useNavigate()
   const location = useLocation()
   const setReport = useReportStore((s) => s.setReport)
+  const setHydrated = useReportStore((s) => s.setHydrated)
   const applyInstitution = useSettings((s) => s.applyInstitution)
   const appearance = useSettings((s) => s.appearance)
   const [recent, setRecent] = useState<RecentMeta[]>([])
@@ -28,6 +30,19 @@ function AppContent() {
   useEffect(() => {
     document.documentElement.classList.toggle('theme-dark', appearance === 'dark')
   }, [appearance])
+
+  useEffect(() => {
+    loadAutosave()
+      .then((saved) => {
+        if (saved) {
+          setReport(saved)
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        setHydrated(true)
+      })
+  }, [])
 
   const refreshRecent = () => listRecentReports().then(setRecent)
   useEffect(() => {
