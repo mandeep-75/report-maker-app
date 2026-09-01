@@ -143,7 +143,7 @@ function CreditTag() {
       href="https://mandeep-75.github.io/Mandeep.dev/"
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-2 right-3 text-xs text-text-muted opacity-80 hover:opacity-100"
+      className="fixed bottom-3 right-7 text-xs font-medium text-gray-400 animate-fade-up"
       title="View portfolio"
     >
       made by Mandeep

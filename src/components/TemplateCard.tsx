@@ -1,5 +1,7 @@
+import { useMemo } from 'react'
 import { Check, Eye, Plus } from 'lucide-react'
 import { ReportTemplate, TemplateCover } from '../data/templates'
+import { PaginatedReport } from './Preview/PreviewContent'
 
 export function TemplateCoverPreview({ cover, className }: { cover: TemplateCover; className?: string }) {
   return (
@@ -61,13 +63,14 @@ export function TemplatePreviewModal({
   onClose: () => void
   onUse: () => void
 }) {
+  const previewReport = useMemo(() => template?.build() ?? null, [template])
   if (!template) return null
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative z-10 flex w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-xl md:flex-row">
-        <div className="flex items-center justify-center bg-surface-alt p-6 md:w-1/2">
-          <TemplateCoverPreview cover={template.cover} className="aspect-[210/297] w-full max-w-[220px]" />
+      <div className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-xl md:flex-row">
+        <div className="max-h-[70vh] overflow-y-auto bg-surface-alt p-6 md:w-1/2">
+          <PaginatedReport report={previewReport!} />
         </div>
         <div className="flex flex-col gap-4 p-6 md:w-1/2">
           <div>

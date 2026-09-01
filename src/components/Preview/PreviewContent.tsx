@@ -6,12 +6,16 @@ import type { Report, Section } from '../../data/reportSchema'
 
 export function PreviewContent() {
   const report = useReportStore((s) => s.report)
+  return <PaginatedReport report={report} />
+}
 
+/** Paginated (A4) rendering of any report — used by the live preview and the
+ *  template preview modal. Page 1 is the real cover page. */
+export function PaginatedReport({ report }: { report: Report }) {
   const sections = useMemo(
     () => sortedSections(report.sections).filter((x) => x.visible),
     [report]
   )
-
   return <PaginatedFlow sections={sections} report={report} />
 }
 

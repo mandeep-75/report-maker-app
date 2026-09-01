@@ -31,7 +31,7 @@ export function createDefaultSections(order: SectionType[] = DEFAULT_SECTION_ORD
     type,
     visible: true,
     label: SECTION_LABELS[type],
-    showHeading: true,
+    showHeading: type !== 'photo',
     order: index,
   }))
 }
@@ -150,7 +150,7 @@ function makeReport(cfg: TemplateConfig = {}): Report {
     type,
     visible: !hidden.has(type),
     label: SECTION_LABELS[type],
-    showHeading: true,
+    showHeading: type !== 'photo',
     order: index,
   }))
   if (cfg.customSections?.length) {
@@ -240,6 +240,58 @@ const placeholderOutcomes = [
   'Encouraged participation, teamwork and collaboration.',
   'Strengthened the department’s academic and co-curricular culture.',
 ]
+
+const COMPETITION_SUMMARY = `The Department of English, Khalsa College Garhdiwala, organised an Inter-College Speech & Debate Competition on 20 November 2026 in the Multipurpose Hall of the college. The competition was held in offline mode and witnessed participation from over thirty students across the region.
+
+Participants competed in two categories — extempore speech and parliamentary-style debate. The event was adjudicated by Dr. Simran Kaur, Associate Professor, DAV College, Hoshiarpur, and Mr. Gurpreet Singh, Head of the Career Cell, GTB Khalsa College, Jalandhar. The judges appreciated the confidence, research and spontaneity displayed by the contestants. The event concluded with a prize distribution ceremony honouring the best speaker and the best team.`
+
+const COMPETITION_OUTCOMES = [
+  'Provided students a platform to develop public speaking and argumentation skills.',
+  'Encouraged research, critical thinking and spontaneous expression.',
+  'Built confidence and stage presence among participants.',
+  'Strengthened inter-college academic interaction and healthy competition.',
+]
+
+const COMPETITION_CONCLUSION = `The Inter-College Speech & Debate Competition was a resounding success and highlighted the department’s commitment to holistic education beyond the classroom. The enthusiastic participation and high standard of debate are expected to inspire more students to take up public speaking in the coming years.`
+
+const CELEBRATION_SUMMARY = `The Department of Music, Khalsa College Garhdiwala, organised the Annual Cultural Fete & Fest 2026 to celebrate the rich cultural heritage of the region. The fest featured folk dances, bhangras, solo and group songs, poetry recitation and a fancy dress competition for junior students.
+
+Renowned artists from the district were invited as guest performers, and students presented a colourful array of performances choreographed by the department faculty. The event concluded with a prize distribution ceremony for the best performances across categories.`
+
+const CELEBRATION_OUTCOMES = [
+  'Provided a vibrant platform for students to showcase their artistic talent.',
+  'Strengthened cultural awareness and appreciation of folk traditions.',
+  'Built teamwork, discipline and stage confidence among participants.',
+  'Fostered a lively, inclusive campus atmosphere.',
+]
+
+const CELEBRATION_CONCLUSION = `The Annual Cultural Fete & Fest 2026 was a memorable celebration of talent and tradition. The overwhelming participation of students and community members reinforced the college’s role as a centre of cultural activity and creative expression.`
+
+const WEBINAR_SUMMARY = `The Department of Computer Science, Khalsa College Garhdiwala, organised a National Webinar on Cyber Security on 27 November 2026. The webinar was conducted in online mode through Google Meet and attended by more than 200 students and faculty members from across the country.
+
+Experts from academia and industry discussed common cyber threats, safe browsing practices, password hygiene, social engineering and the legal framework around cyber crime in India. The session included a live demonstration of phishing attacks and a question-and-answer round in which participants interacted with the speakers.`
+
+const WEBINAR_OUTCOMES = [
+  'Created awareness about modern cyber threats and safe digital practices.',
+  'Demonstrated practical defence techniques such as phishing detection and secure password management.',
+  'Explained the legal provisions governing cyber crime in India.',
+  'Engaged a national audience of students and faculty through a live Q&A.',
+]
+
+const WEBINAR_CONCLUSION = `The National Webinar on Cyber Security was well-received and addressed an urgent need for digital literacy among students. Participants gained practical, actionable knowledge to protect themselves online, and the department plans to organise follow-up sessions on emerging topics such as AI and data privacy.`
+
+const AWARENESS_SUMMARY = `The NSS Unit of Khalsa College Garhdiwala conducted Swachhata Awareness Week from 8 to 14 December 2026 to promote cleanliness, hygiene and environmental responsibility on and around the campus. Activities included a campus cleanliness drive, a student pledge ceremony, poster-making and slogan-writing competitions, and an awareness rally in the nearby village.
+
+The week concluded with a seminar on waste segregation and the proper use of dustbins, followed by the distribution of saplings. The campaign was organised in the spirit of the Swachh Bharat Mission and saw active participation from student volunteers and faculty members.`
+
+const AWARENESS_OUTCOMES = [
+  'Encouraged students and the local community to adopt cleanliness as a habit.',
+  'Raised awareness about waste segregation and environmental responsibility.',
+  'Promoted the ideals of the Swachh Bharat Mission through rallies and pledges.',
+  'Cultivated leadership and organisational skills among NSS volunteers.',
+]
+
+const AWARENESS_CONCLUSION = `The Swachhata Awareness Week successfully translated the message of cleanliness into visible action. The sustained participation of students, staff and villagers reflected the college’s commitment to community service and its role in building a cleaner, healthier society.`
 
 export const TEMPLATES: ReportTemplate[] = [
   {
@@ -381,6 +433,170 @@ export const TEMPLATES: ReportTemplate[] = [
         outcomes: placeholderOutcomes,
         conclusion:
           'The workshop successfully combined theory with practice, leaving participants confident in building their own web projects.',
+      }),
+  },
+  {
+    id: 'speech-debate-competition',
+    name: 'Speech & Debate Competition',
+    description:
+      'Competition template — rounds, judges, contestants and results. Adapt it to any debate, elocution or extempore contest.',
+    category: 'competition',
+    cover: { title: 'SPEECH & DEBATE', subtitle: 'REPORT', college: 'COLLEGE NAME', from: '#ec4899', to: '#8b5cf6' },
+    included: ['Cover', 'Event Information', 'Resource Person', 'Theme', 'Brochure', 'Summary', 'Key Outcomes', 'Conclusion', 'Snapshots', 'Certificates'],
+    build: () =>
+      makeReport({
+        hiddenSections: ['photo', 'organized-by', 'press-coverage'],
+        eventInfo: {
+          collegeName: 'KHALSA COLLEGE GARHDIWALA',
+          department: 'DEPARTMENT OF ENGLISH',
+          eventName: 'INTER-COLLEGE SPEECH & DEBATE COMPETITION 2026',
+          theme: 'Voicing Ideas, Shaping Perspectives',
+          date: '2026-11-20',
+          time: '10:00 AM – 3:00 PM',
+          venue: 'Multipurpose Hall, Khalsa College Garhdiwala',
+          mode: 'Offline',
+          academicSession: '2026–27',
+          organisedBy: 'Department of English, Khalsa College Garhdiwala',
+          tagline: 'Ideas that Inspire',
+        },
+        resourcePersons: [
+          {
+            id: 'rp-1',
+            name: 'Dr. Simran Kaur',
+            designation: 'Associate Professor',
+            department: 'Department of English',
+            institution: 'DAV College',
+            location: 'Hoshiarpur',
+            photo: null,
+          },
+          {
+            id: 'rp-2',
+            name: 'Mr. Gurpreet Singh',
+            designation: 'Head, Career Cell',
+            department: 'Personality Development',
+            institution: 'GTB Khalsa College',
+            location: 'Jalandhar',
+            photo: null,
+          },
+        ],
+        brochure: {
+          type: 'upload',
+          dataUrl: null,
+          caption:
+            'Date: 20 November 2026\nTime: 10:00 AM – 3:00 PM\nVenue: Multipurpose Hall, Khalsa College Garhdiwala\nMode: Offline\nOrganised by: Department of English\nPrizes for the best speaker and the best team',
+        },
+        summary: COMPETITION_SUMMARY,
+        outcomes: COMPETITION_OUTCOMES,
+        conclusion: COMPETITION_CONCLUSION,
+        organizedBy: 'Department of English\nKhalsa College Garhdiwala',
+        certificateLayout: '2',
+      }),
+  },
+  {
+    id: 'cultural-celebration',
+    name: 'Cultural Celebration Report',
+    description:
+      'Celebration template — cultural performances, competitions and prize distribution on a festive occasion.',
+    category: 'celebration',
+    cover: { title: 'CULTURAL FEST', subtitle: 'REPORT', college: 'COLLEGE NAME', from: '#fb923c', to: '#e11d48' },
+    included: ['Cover', 'Event Information', 'Theme', 'Summary', 'Key Outcomes', 'Conclusion', 'Snapshots', 'Certificates'],
+    build: () =>
+      makeReport({
+        hiddenSections: ['resource-person', 'photo', 'brochure', 'organized-by', 'press-coverage'],
+        eventInfo: {
+          collegeName: 'KHALSA COLLEGE GARHDIWALA',
+          department: 'DEPARTMENT OF MUSIC',
+          eventName: 'ANNUAL CULTURAL FETE & FEST 2026',
+          theme: 'Celebrating Heritage, Unleashing Talent',
+          date: '2026-12-05',
+          time: '5:00 PM onwards',
+          venue: 'College Auditorium, Khalsa College Garhdiwala',
+          mode: 'Offline',
+          academicSession: '2026–27',
+          organisedBy: 'Department of Music, Khalsa College Garhdiwala',
+          tagline: 'Colours of Culture',
+        },
+        summary: CELEBRATION_SUMMARY,
+        outcomes: CELEBRATION_OUTCOMES,
+        conclusion: CELEBRATION_CONCLUSION,
+      }),
+  },
+  {
+    id: 'national-webinar',
+    name: 'National Webinar Report',
+    description:
+      'Webinar template — online expert talks, technical sessions and Q&A on a single theme.',
+    category: 'webinar',
+    cover: { title: 'WEBINAR', subtitle: 'REPORT', college: 'COLLEGE NAME', from: '#38bdf8', to: '#2563eb' },
+    included: ['Cover', 'Event Information', 'Resource Person', 'Theme', 'Summary', 'Key Outcomes', 'Conclusion', 'Snapshots', 'Certificates'],
+    build: () =>
+      makeReport({
+        hiddenSections: ['photo', 'brochure', 'organized-by', 'press-coverage'],
+        eventInfo: {
+          collegeName: 'KHALSA COLLEGE GARHDIWALA',
+          department: 'DEPARTMENT OF COMPUTER SCIENCE',
+          eventName: 'NATIONAL WEBINAR ON CYBER SECURITY 2026',
+          theme: 'Securing the Digital Future',
+          date: '2026-11-27',
+          time: '11:00 AM – 1:30 PM',
+          venue: 'Google Meet / YouTube Live',
+          mode: 'Online',
+          academicSession: '2026–27',
+          organisedBy: 'Department of Computer Science, Khalsa College Garhdiwala',
+          tagline: 'Stay Safe, Stay Secure',
+        },
+        resourcePersons: [
+          {
+            id: 'rp-1',
+            name: 'Dr. Amit Sharma',
+            designation: 'Professor',
+            department: 'Cyber Forensics',
+            institution: 'Punjab Technical University',
+            location: 'Jalandhar',
+            photo: null,
+          },
+          {
+            id: 'rp-2',
+            name: 'Ms. Neha Verma',
+            designation: 'Security Analyst',
+            department: 'Information Security',
+            institution: 'SecureTech Solutions',
+            location: 'Chandigarh',
+            photo: null,
+          },
+        ],
+        summary: WEBINAR_SUMMARY,
+        outcomes: WEBINAR_OUTCOMES,
+        conclusion: WEBINAR_CONCLUSION,
+      }),
+  },
+  {
+    id: 'awareness-campaign',
+    name: 'Awareness Campaign Report',
+    description:
+      'Awareness template — rallies, pledge drives, poster campaigns and outreach activities.',
+    category: 'awareness',
+    cover: { title: 'AWARENESS', subtitle: 'REPORT', college: 'COLLEGE NAME', from: '#4ade80', to: '#059669' },
+    included: ['Cover', 'Event Information', 'Theme', 'Summary', 'Key Outcomes', 'Conclusion', 'Snapshots', 'Press Coverage'],
+    build: () =>
+      makeReport({
+        hiddenSections: ['resource-person', 'photo', 'brochure', 'organized-by'],
+        eventInfo: {
+          collegeName: 'KHALSA COLLEGE GARHDIWALA',
+          department: 'NSS UNIT',
+          eventName: 'SWACHHATA AWARENESS WEEK 2026',
+          theme: 'Clean Campus, Green Campus',
+          date: '2026-12-08',
+          time: '9:00 AM onwards',
+          venue: 'College Campus & Nearby Village, Khalsa College Garhdiwala',
+          mode: 'Offline',
+          academicSession: '2026–27',
+          organisedBy: 'NSS Unit, Khalsa College Garhdiwala',
+          tagline: 'Swachh Bharat, Swasth Bharat',
+        },
+        summary: AWARENESS_SUMMARY,
+        outcomes: AWARENESS_OUTCOMES,
+        conclusion: AWARENESS_CONCLUSION,
       }),
   },
   {

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FileDown, FileText, Save, Loader2 } from 'lucide-react'
+import { FileDown, FileText, Save, Loader2, ExternalLink } from 'lucide-react'
 import { useReportStore } from '../../store/reportStore'
 import { saveProjectFile } from '../../utils/project'
 import { exportReport, ExportFormat } from '../../export'
@@ -61,6 +61,16 @@ export function Toolbar({ onBack }: { onBack?: () => void }) {
         <Button variant="primary" size="sm" onClick={() => runExport('pdf')} disabled={busy}>
           {exporting === 'pdf' ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />} PDF
         </Button>
+        <span className="mx-1 h-5 w-px bg-border" />
+        <a
+          href="https://www.ilovepdf.com"
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-1 rounded px-2 py-1 text-sm text-text-muted hover:bg-surface-alt hover:text-text cursor-pointer"
+          title="Convert, merge or compress your exported files"
+        >
+          <ExternalLink className="h-4 w-4" /> iLovePDF
+        </a>
       </div>
     </header>
   )

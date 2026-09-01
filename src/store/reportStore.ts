@@ -145,7 +145,7 @@ export const useReportStore = create<ReportStore>()(
             type,
             visible: true,
             label: label ?? SECTION_LABELS[type],
-            showHeading: true,
+            showHeading: type !== 'photo',
             order: state.report.sections.length,
           }
           return {

@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { Upload } from 'lucide-react'
+import { Plus, Upload } from 'lucide-react'
 import { TemplateBrowser } from '../components/TemplateBrowser'
 import { RecentReports } from '../components/RecentReports'
 import { RecentMeta } from '../utils/storage'
@@ -39,10 +39,10 @@ export function HomeScreen({
         <div className="mt-6 flex w-full max-w-xl gap-3">
           <button
             onClick={onNew}
-            className="accent-solid flex flex-1 items-center gap-3 rounded-2xl p-6 text-left text-white shadow-lg transition-opacity hover:opacity-90 cursor-pointer"
+            className="accent-solid flex flex-1 items-center gap-3 rounded-2xl p-6 px-9 text-left text-white shadow-lg transition-opacity hover:opacity-90 cursor-pointer"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 text-2xl font-bold">
-              +
+            <div className="flex h-12 w-24 items-center justify-center rounded-xl bg-white/20 text-white">
+              <Plus className="h-6 w-6" />
             </div>
             <div>
               <div className="text-lg font-semibold">Create New Report</div>
@@ -53,7 +53,7 @@ export function HomeScreen({
             onClick={() => fileRef.current?.click()}
             className="flex flex-1 items-center gap-3 rounded-2xl border border-border bg-surface p-6 text-left shadow-lg transition-colors hover:border-primary cursor-pointer"
           >
-            <div className="accent-solid flex h-12 w-12 items-center justify-center rounded-xl text-white">
+            <div className="accent-solid flex h-12 w-20 items-center justify-center rounded-xl text-white">
               <Upload className="h-6 w-6" />
             </div>
             <div>
