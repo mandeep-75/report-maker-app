@@ -9,7 +9,7 @@ interface GenerateOptions {
 }
 
 export async function generateText({ apiKey, model, prompt, context, maxTokens = 2048 }: GenerateOptions): Promise<string> {
-  if (!apiKey) throw new Error('API key not set. Add your OpenCode Zen key in Settings.')
+  if (!apiKey) throw new Error('AI API key not set. Add it in Settings.')
 
   const messages = [
     ...(context ? [{ role: 'system' as const, content: context }] : []),

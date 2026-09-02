@@ -65,15 +65,15 @@ export function SettingsScreen() {
             AI Assistant
           </h2>
           <p className="mt-1.5 text-xs text-text-muted">
-            Add your OpenCode Zen API key to enable AI generation in report sections.
+            Add your AI API key to enable AI generation in report sections.
           </p>
           <div className="mt-4 flex flex-col gap-3">
             <Input
-              label="OpenCode Zen API Key"
+              label="AI API Key"
               type="password"
               value={settings.apiKey}
               onChange={(e) => settings.setApiKey(e.target.value)}
-              placeholder="zen_..."
+              placeholder="Your API key"
             />
             <Select
               label="Model"
