@@ -109,7 +109,7 @@ export function HomeScreen({
               <p className="mt-1 text-sm text-text-muted">
                 Pixel-perfect PDF export, straight from your event report — paragraphs,
                 tables, images and galleries, all laid out exactly as designed.
-                Powered by
+                For more PDF tools, visit
                 <a
                   href="https://www.ilovepdf.com"
                   target="_blank"
@@ -117,8 +117,7 @@ export function HomeScreen({
                   className="font-medium text-text hover:underline"
                 >
                   iLovePDF
-                </a>
-                — merge, split, compress, convert, and edit PDFs with ease.
+                </a>.
               </p>
             </div>
           </div>
