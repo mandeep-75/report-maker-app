@@ -1,10 +1,5 @@
 import { useReportStore } from '../../store/reportStore'
-import { Select } from '../UI/Select'
-import { Button } from '../UI/Button'
-import { GalleryGrid } from '../Gallery/PhotoGrid'
-import { PhotoUpload } from '../Gallery/PhotoUpload'
-import { IMAGE_LAYOUT_OPTIONS } from '../../data/templates'
-import { Plus } from 'lucide-react'
+import { GalleryEditor } from './GalleryEditor'
 
 export function SnapshotsEditor() {
   const snapshots = useReportStore((s) => s.report.snapshots)
@@ -15,36 +10,15 @@ export function SnapshotsEditor() {
   const updateSnapshotCaption = useReportStore((s) => s.updateSnapshotCaption)
 
   return (
-    <div className="flex flex-col gap-3">
-      <Select
-        label="Gallery Layout"
-        value={snapshotLayout}
-        onChange={(e) => setSnapshotLayout(e.target.value as typeof snapshotLayout)}
-        options={IMAGE_LAYOUT_OPTIONS}
-      />
-      {snapshots.length === 0 ? (
-        <PhotoUpload onUpload={(url) => addSnapshot(url)} />
-      ) : (
-        <>
-          <GalleryGrid
-            images={snapshots}
-            layout={snapshotLayout}
-            onRemove={removeSnapshot}
-            onCaption={updateSnapshotCaption}
-          />
-          <div className="flex items-center gap-2">
-            <PhotoUpload onUpload={(url) => addSnapshot(url)} label="Add Photos" />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => addSnapshot('')}
-              title="Add empty slot"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-        </>
-      )}
-    </div>
+    <GalleryEditor
+      images={snapshots}
+      layout={snapshotLayout}
+      onSetLayout={(l) => setSnapshotLayout(l)}
+      onAdd={(url) => addSnapshot(url)}
+      onAddEmpty={() => addSnapshot('')}
+      onRemove={removeSnapshot}
+      onCaption={updateSnapshotCaption}
+      layoutLabel="Gallery Layout"
+    />
   )
 }

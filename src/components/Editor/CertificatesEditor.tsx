@@ -1,10 +1,5 @@
 import { useReportStore } from '../../store/reportStore'
-import { Select } from '../UI/Select'
-import { Input } from '../UI/Input'
-import { PhotoUpload } from '../Gallery/PhotoUpload'
-import { IMAGE_LAYOUT_OPTIONS } from '../../data/templates'
-import { CertificateLayout } from '../../data/reportSchema'
-import { Trash2 } from 'lucide-react'
+import { GalleryEditor } from './GalleryEditor'
 
 export function CertificatesEditor() {
   const certificates = useReportStore((s) => s.report.certificates)
@@ -17,44 +12,15 @@ export function CertificatesEditor() {
   const perPage = Number(certificateLayout)
 
   return (
-    <div className="flex flex-col gap-3">
-      <Select
-        label="Layout"
-        value={certificateLayout}
-        onChange={(e) => setCertificateLayout(e.target.value as CertificateLayout)}
-        options={IMAGE_LAYOUT_OPTIONS}
-      />
-
-      {certificates.length > 0 && (
-        <div className="grid grid-cols-2 gap-3">
-          {certificates.map((c) => (
-            <div key={c.id} className="relative rounded-lg border border-border bg-surface p-2 shadow-sm transition-shadow hover:shadow-card">
-              <img src={c.dataUrl} alt="Certificate" className="h-36 w-full rounded-md object-contain bg-surface-alt" />
-              <button
-                onClick={() => removeCertificate(c.id)}
-                className="absolute right-1.5 top-1.5 rounded-md bg-black/60 px-1.5 py-0.5 text-xs text-white backdrop-blur-sm transition-colors hover:bg-danger cursor-pointer"
-                title="Remove"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </button>
-              <Input
-                value={c.caption ?? ''}
-                onChange={(e) => updateCertificateCaption(c.id, e.target.value)}
-                placeholder="Caption (optional)"
-                className="mt-1"
-              />
-            </div>
-          ))}
-        </div>
-      )}
-
-      <PhotoUpload onUpload={(url) => addCertificate(url)} label="Add Certificates" />
-
-      {certificates.length > 0 && !Number.isNaN(perPage) && (
-        <p className="text-xs text-text-muted">
-          {perPage} per page · {Math.ceil(certificates.length / perPage)} page(s)
-        </p>
-      )}
-    </div>
+    <GalleryEditor
+      images={certificates}
+      layout={certificateLayout}
+      onSetLayout={(l) => setCertificateLayout(l)}
+      onAdd={(url) => addCertificate(url)}
+      onRemove={removeCertificate}
+      onCaption={updateCertificateCaption}
+      uploadLabel="Add Certificates"
+      perPage={perPage}
+    />
   )
 }
