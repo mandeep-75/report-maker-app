@@ -15,7 +15,6 @@ export function SnapshotsEditor() {
       layout={snapshotLayout}
       onSetLayout={(l) => setSnapshotLayout(l)}
       onAdd={(url) => addSnapshot(url)}
-      onAddEmpty={() => addSnapshot('')}
       onRemove={removeSnapshot}
       onCaption={updateSnapshotCaption}
       layoutLabel="Gallery Layout"
