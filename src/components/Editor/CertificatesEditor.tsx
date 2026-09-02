@@ -25,9 +25,7 @@ export function CertificatesEditor() {
         options={IMAGE_LAYOUT_OPTIONS}
       />
 
-      {certificates.length === 0 ? (
-        <PhotoUpload onUpload={(url) => addCertificate(url)} label="Upload Certificates" />
-      ) : (
+      {certificates.length > 0 && (
         <div className="grid grid-cols-2 gap-3">
           {certificates.map((c) => (
             <div key={c.id} className="relative rounded-lg border border-border bg-surface p-2 shadow-sm transition-shadow hover:shadow-card">
