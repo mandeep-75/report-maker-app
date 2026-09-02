@@ -4,7 +4,6 @@ import { Textarea } from '../UI/Textarea'
 import { Upload } from 'lucide-react'
 import { useImageUpload } from '../../hooks/useImageUpload'
 import { cn } from '../../utils/cn'
-import { AIStubButton } from './AIStubButton'
 
 export function BrochureEditor() {
   const brochure = useReportStore((s) => s.report.brochure)
@@ -54,7 +53,6 @@ export function BrochureEditor() {
         placeholder="Write details or a description to appear with the brochure"
         rows={4}
       />
-      <AIStubButton label="AI Generate Description" />
     </div>
   )
 }
