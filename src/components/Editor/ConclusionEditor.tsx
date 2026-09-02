@@ -13,7 +13,12 @@ export function ConclusionEditor() {
         placeholder="Write conclusion..."
         className="flex-1"
       />
-      <AIStubButton label="AI Generate" />
+      <AIStubButton
+        label="AI Generate"
+        context="You help educators write concise, professional event report sections."
+        prompt="Write a conclusion section (3-4 sentences) summarizing the impact and takeaways of a college event for an event report."
+        onResult={updateConclusion}
+      />
     </div>
   )
 }

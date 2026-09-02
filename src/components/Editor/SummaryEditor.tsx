@@ -16,7 +16,12 @@ export function SummaryEditor() {
         className="flex-1"
       />
       <div className="flex items-center gap-2">
-        <AIStubButton label="AI Generate" />
+        <AIStubButton
+          label="AI Generate"
+          context="You help educators write concise, professional event report sections."
+          prompt="Write a concise event summary section (3-5 sentences) for a college event report."
+          onResult={updateSummary}
+        />
         <Button variant="ghost" size="sm" onClick={() => updateSummary('')}>
           <Eraser className="h-4 w-4" /> Clear
         </Button>

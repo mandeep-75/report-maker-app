@@ -92,7 +92,12 @@ export function EventInfoForm() {
         onChange={(e) => updateEventInfo({ tagline: e.target.value })}
         placeholder="A short motivational line for the cover"
       />
-      <AIStubButton label="AI Suggest Tagline" />
+      <AIStubButton
+        label="AI Suggest Tagline"
+        context={`Event: ${eventInfo.eventName || 'a college event'}. Theme: ${eventInfo.theme || 'unspecified'}.`}
+        prompt="Suggest one short, motivational tagline for an event report cover. Return only the tagline text, no quotes or explanation."
+        onResult={(text) => updateEventInfo({ tagline: text })}
+      />
       <div className="mt-2 border-t border-border pt-3">
         <h3 className="mb-2 text-sm font-semibold text-text">Resource Person</h3>
         <ResourcePersonForm />

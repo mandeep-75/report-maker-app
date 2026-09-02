@@ -1,5 +1,6 @@
-import { useSettings } from '../store/settingsStore'
+import { useSettings, FREE_MODELS } from '../store/settingsStore'
 import { Select } from '../components/UI/Select'
+import { Input } from '../components/UI/Input'
 import { cn } from '../utils/cn'
 
 export function SettingsScreen() {
@@ -55,6 +56,30 @@ export function SettingsScreen() {
               value="Portrait"
               onChange={() => {}}
               options={[{ value: 'Portrait', label: 'Portrait' }]}
+            />
+          </div>
+        </section>
+
+        <section className="mt-8 rounded-xl border border-border bg-surface p-5 shadow-card">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+            AI Assistant
+          </h2>
+          <p className="mt-1.5 text-xs text-text-muted">
+            Add your OpenCode Zen API key to enable AI generation in report sections.
+          </p>
+          <div className="mt-4 flex flex-col gap-3">
+            <Input
+              label="OpenCode Zen API Key"
+              type="password"
+              value={settings.apiKey}
+              onChange={(e) => settings.setApiKey(e.target.value)}
+              placeholder="zen_..."
+            />
+            <Select
+              label="Model"
+              value={settings.selectedModel}
+              onChange={(e) => settings.setSelectedModel(e.target.value as (typeof FREE_MODELS)[number]['id'])}
+              options={FREE_MODELS.map((m) => ({ value: m.id, label: m.label }))}
             />
           </div>
         </section>

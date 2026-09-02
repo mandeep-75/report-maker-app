@@ -39,7 +39,20 @@ export function OutcomesEditor() {
         <Button variant="outline" size="sm" onClick={addOutcome}>
           <Plus className="h-4 w-4" /> Add Outcome
         </Button>
-        <AIStubButton label="Generate with AI" />
+        <AIStubButton
+          label="Generate with AI"
+          context="You help educators write concise, professional event report sections."
+          prompt="List 4-6 key outcomes of a college event, one per line with no numbering or bullet characters. Just plain lines of text."
+          onResult={(text) => {
+            const lines = text
+              .split('\n')
+              .map((l) => l.replace(/^[\s\d.\-•*]+/, '').trim())
+              .filter(Boolean)
+            if (!lines.length) return
+            updateOutcome(0, lines[0])
+            for (let i = 1; i < lines.length; i++) addOutcome()
+          }}
+        />
       </div>
     </div>
   )
