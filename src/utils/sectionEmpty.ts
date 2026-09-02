@@ -31,12 +31,6 @@ export function isSectionEmpty(section: Section, report: Report): boolean {
       return report.certificates.filter((c) => c.dataUrl).length === 0
     case 'press-coverage':
       return report.pressCoverage.filter((p) => p.dataUrl).length === 0
-    case 'custom': {
-      const custom = report.customSections.find((c) => `section-custom-${c.id}` === section.id)
-      if (!custom) return true
-      if (custom.layout === 'gallery') return false
-      return htmlToBlocks(custom.content).every((b) => b.runs.every((r) => !r.text.trim())) && !custom.title.trim()
-    }
     default:
       return false
   }

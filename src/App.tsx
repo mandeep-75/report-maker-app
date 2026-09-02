@@ -23,7 +23,6 @@ function AppContent() {
   const location = useLocation()
   const setReport = useReportStore((s) => s.setReport)
   const setHydrated = useReportStore((s) => s.setHydrated)
-  const applyInstitution = useSettings((s) => s.applyInstitution)
   const appearance = useSettings((s) => s.appearance)
   const [recent, setRecent] = useState<RecentMeta[]>([])
 
@@ -53,7 +52,6 @@ function AppContent() {
 
   const handleNew = () => {
     const report = createBlankReport()
-    applyInstitution(report)
     setReport(report)
     goEditor()
   }

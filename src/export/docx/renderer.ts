@@ -381,21 +381,21 @@ function textRuns(runs: DocTextRun[], opts?: { bold?: boolean; size?: number; co
 
 function bodyParagraph(p: DocParagraph, ctx: DocxContextData): Paragraph {
   const s = sp(ctx)
+  const opts: { bold?: boolean; size?: number; color?: string; italics?: boolean } = {}
+  if (p.role === 'theme') {
+    opts.size = half(TYPE.theme)
+    opts.italics = true
+    opts.color = color(COLOR.accent)
+  } else if (p.role === 'caption') {
+    opts.size = half(TYPE.caption)
+    opts.color = color(COLOR.caption)
+  } else if (p.role === 'centeredBold') {
+    opts.bold = true
+  }
+
   const children: TextRun[] = []
   if (p.label) children.push(new TextRun({ text: p.label + ': ', bold: true, color: color(COLOR.heading), font: FONT_FAMILY.docx }))
-  children.push(...textRuns(p.runs))
-
-  let size: number | undefined
-  let italics: boolean | undefined
-  let textColor: string | undefined
-  if (p.role === 'theme') {
-    size = half(TYPE.theme)
-    italics = true
-    textColor = color(COLOR.accent)
-  } else if (p.role === 'caption') {
-    size = half(TYPE.caption)
-    textColor = color(COLOR.caption)
-  }
+  children.push(...textRuns(p.runs, opts))
 
   return new Paragraph({
     alignment: alignToDocx(p.align, p.role),
@@ -407,11 +407,7 @@ function bodyParagraph(p: DocParagraph, ctx: DocxContextData): Paragraph {
       line: Math.round(240 * s.bodyLineHeight),
       lineRule: 'auto',
     },
-    children: children.map((r) => {
-      if (size === undefined && italics === undefined && textColor === undefined) return r
-      if (size === undefined && p.role !== 'centeredBold') return r
-      return r
-    }),
+    children,
   })
 }
 

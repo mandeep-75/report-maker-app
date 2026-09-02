@@ -11,7 +11,9 @@ body {
   background: #fff;
   margin: 24px auto;
   padding: 6% 7%;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  box-shadow: 0 1px 3px rgba(15,23,42,0.06), 0 8px 24px rgba(15,23,42,0.08);
+  border: 1px solid rgba(15,23,42,0.05);
+  border-radius: 4px;
   position: relative;
 }
 .page:last-child { margin-bottom: 24px; }
@@ -76,9 +78,6 @@ body {
 .gallery-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
 .gallery-grid img { width: 100%; border: 1px solid #e2e8f0; object-fit: cover; }
 .gallery-grid .caption { font-size: 11px; color: #64748b; text-align: center; margin-top: 4px; }
-.gallery-large-small { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
-.gallery-large-small .small-col { display: flex; flex-direction: column; gap: 12px; }
-.gallery-large-small img { width: 100%; border: 1px solid #e2e8f0; object-fit: cover; }
 
 .cert-grid { display: grid; gap: 16px; }
 .cert-grid.cols-1 { grid-template-columns: 1fr; }

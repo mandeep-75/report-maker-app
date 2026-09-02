@@ -28,12 +28,12 @@ export function PressCoverageEditor() {
         <PhotoUpload onUpload={addOne} label="Upload Newspaper / Article Images" />
       ) : (
         pressCoverage.map((item) => (
-          <div key={item.id} className="rounded-lg border border-border bg-surface-alt p-3">
+          <div key={item.id} className="rounded-xl border border-border bg-surface-alt/60 p-3.5 shadow-sm">
             <div className="mb-2 flex items-center justify-between">
-              <span className="text-[10px] font-medium text-text-muted">Press Item</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Press Item</span>
               <button
                 onClick={() => removePressCoverage(item.id)}
-                className="text-danger hover:text-danger-hover cursor-pointer"
+                className="rounded-md p-1 text-danger hover:bg-danger/10 transition-colors cursor-pointer"
               >
                 <Trash2 className="h-4 w-4" />
               </button>

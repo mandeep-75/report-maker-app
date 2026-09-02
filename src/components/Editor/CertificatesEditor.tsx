@@ -2,7 +2,7 @@ import { useReportStore } from '../../store/reportStore'
 import { Select } from '../UI/Select'
 import { Input } from '../UI/Input'
 import { PhotoUpload } from '../Gallery/PhotoUpload'
-import { CERTIFICATE_LAYOUT_OPTIONS } from '../../data/templates'
+import { IMAGE_LAYOUT_OPTIONS } from '../../data/templates'
 import { CertificateLayout } from '../../data/reportSchema'
 import { Trash2 } from 'lucide-react'
 
@@ -22,7 +22,7 @@ export function CertificatesEditor() {
         label="Layout"
         value={certificateLayout}
         onChange={(e) => setCertificateLayout(e.target.value as CertificateLayout)}
-        options={CERTIFICATE_LAYOUT_OPTIONS}
+        options={IMAGE_LAYOUT_OPTIONS}
       />
 
       {certificates.length === 0 ? (
@@ -30,11 +30,12 @@ export function CertificatesEditor() {
       ) : (
         <div className="grid grid-cols-2 gap-3">
           {certificates.map((c) => (
-            <div key={c.id} className="relative rounded border border-border bg-surface p-2">
-              <img src={c.dataUrl} alt="Certificate" className="h-36 w-full rounded object-contain" />
+            <div key={c.id} className="relative rounded-lg border border-border bg-surface p-2 shadow-sm transition-shadow hover:shadow-card">
+              <img src={c.dataUrl} alt="Certificate" className="h-36 w-full rounded-md object-contain bg-surface-alt" />
               <button
                 onClick={() => removeCertificate(c.id)}
-                className="absolute right-1 top-1 rounded bg-black/50 px-1.5 py-0.5 text-xs text-white cursor-pointer"
+                className="absolute right-1.5 top-1.5 rounded-md bg-black/60 px-1.5 py-0.5 text-xs text-white backdrop-blur-sm transition-colors hover:bg-danger cursor-pointer"
+                title="Remove"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -51,7 +52,7 @@ export function CertificatesEditor() {
 
       <PhotoUpload onUpload={(url) => addCertificate(url)} label="Add Certificates" />
 
-      {certificates.length > 0 && (
+      {certificates.length > 0 && !Number.isNaN(perPage) && (
         <p className="text-xs text-text-muted">
           {perPage} per page · {Math.ceil(certificates.length / perPage)} page(s)
         </p>

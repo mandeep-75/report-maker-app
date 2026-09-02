@@ -10,11 +10,15 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-primary text-white hover:bg-primary-hover',
-  secondary: 'bg-secondary text-white hover:bg-slate-600',
-  ghost: 'bg-transparent text-text hover:bg-surface-alt',
-  danger: 'bg-danger text-white hover:bg-danger-hover',
-  outline: 'bg-transparent border border-border text-text hover:bg-surface-alt',
+  primary:
+    'bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover active:bg-primary-hover/90 active:shadow-none',
+  secondary:
+    'bg-secondary text-white shadow-sm hover:bg-secondary-hover active:bg-secondary-hover/90 active:shadow-none',
+  ghost: 'bg-transparent text-text hover:bg-surface-alt hover:text-text',
+  danger:
+    'bg-danger text-white shadow-sm hover:bg-danger-hover active:bg-danger-hover/90 active:shadow-none',
+  outline:
+    'bg-transparent border border-border text-text shadow-sm hover:bg-surface-alt hover:border-border-dark active:bg-surface',
 }
 
 const sizes: Record<Size, string> = {
@@ -28,7 +32,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     <button
       ref={ref}
       className={cn(
-        'inline-flex items-center justify-center gap-1.5 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer',
+        'focus-ring inline-flex items-center justify-center gap-1.5 rounded-lg font-medium transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none cursor-pointer active:scale-[0.98]',
         variants[variant],
         sizes[size],
         className

@@ -15,10 +15,10 @@ export function Tabs({ tabs, active, onChange, className }: TabsProps) {
           key={t.value}
           onClick={() => onChange(t.value)}
           className={cn(
-            'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors cursor-pointer',
+            'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-all duration-150 cursor-pointer rounded-t-md focus-ring',
             active === t.value
               ? 'border-primary text-primary'
-              : 'border-transparent text-text-muted hover:text-text'
+              : 'border-transparent text-text-muted hover:text-text hover:border-border'
           )}
         >
           {t.label}

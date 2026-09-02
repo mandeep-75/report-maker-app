@@ -3,7 +3,7 @@ import { Select } from '../UI/Select'
 import { Button } from '../UI/Button'
 import { GalleryGrid } from '../Gallery/PhotoGrid'
 import { PhotoUpload } from '../Gallery/PhotoUpload'
-import { GALLERY_LAYOUT_OPTIONS } from '../../data/templates'
+import { IMAGE_LAYOUT_OPTIONS } from '../../data/templates'
 import { Plus } from 'lucide-react'
 
 export function SnapshotsEditor() {
@@ -20,7 +20,7 @@ export function SnapshotsEditor() {
         label="Gallery Layout"
         value={snapshotLayout}
         onChange={(e) => setSnapshotLayout(e.target.value as typeof snapshotLayout)}
-        options={GALLERY_LAYOUT_OPTIONS}
+        options={IMAGE_LAYOUT_OPTIONS}
       />
       {snapshots.length === 0 ? (
         <PhotoUpload onUpload={(url) => addSnapshot(url)} />

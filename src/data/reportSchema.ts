@@ -11,7 +11,6 @@ export type SectionType =
   | 'certificates'
   | 'press-coverage'
   | 'photo'
-  | 'custom'
 
 export interface Section {
   id: string
@@ -61,9 +60,9 @@ export interface PressCoverageItem {
   caption: string
 }
 
-export type GalleryLayout = '1' | '2' | '3' | '4' | '6' | 'large-small' | 'full'
+export type GalleryLayout = '1' | '2' | '4'
 
-export type CertificateLayout = '1' | '2' | '4' | '6'
+export type CertificateLayout = GalleryLayout
 
 export interface Brochure {
   type: 'auto' | 'upload'
@@ -74,14 +73,6 @@ export interface Brochure {
 export interface Photo {
   dataUrl: string | null
   caption: string
-}
-
-export interface CustomSection {
-  id: string
-  title: string
-  content: string
-  layout: 'text' | 'gallery' | 'photo' | 'list' | 'quote' | 'table'
-  images: ImageItem[]
 }
 
 export interface Report {
@@ -102,7 +93,6 @@ export interface Report {
   certificates: ImageItem[]
   certificateLayout: CertificateLayout
   pressCoverage: PressCoverageItem[]
-  customSections: CustomSection[]
 }
 
 export const SECTION_LABELS: Record<SectionType, string> = {
@@ -118,7 +108,6 @@ export const SECTION_LABELS: Record<SectionType, string> = {
   certificates: 'Certificates',
   'press-coverage': 'Press Coverage',
   photo: 'Photo',
-  custom: 'Custom Section',
 }
 
 export const DEFAULT_SECTION_ORDER: SectionType[] = [

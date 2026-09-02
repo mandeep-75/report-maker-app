@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { Report, SectionType, CustomSection, SECTION_LABELS } from '../data/reportSchema'
+import { Report, SECTION_LABELS } from '../data/reportSchema'
 import { createDefaultReport } from '../data/templates'
 
 interface ReportStore {
@@ -21,8 +21,8 @@ interface ReportStore {
   updateResourcePerson: (id: string, updates: Partial<Report['resourcePersons'][number]>) => void
   removeResourcePerson: (id: string) => void
 
-  addSection: (type: SectionType, label?: string) => void
   removeSection: (id: string) => void
+  updateSectionLabel: (id: string, label: string) => void
   toggleSectionVisibility: (id: string) => void
   toggleSectionHeading: (id: string) => void
   reorderSections: (fromIndex: number, toIndex: number) => void
@@ -53,12 +53,6 @@ interface ReportStore {
   removePressCoverage: (id: string) => void
   updatePressCoverage: (id: string, updates: Partial<Report['pressCoverage'][number]>) => void
 
-  addCustomSection: (title: string, layout: CustomSection['layout']) => void
-  updateCustomSection: (id: string, updates: Partial<Pick<CustomSection, 'title' | 'content' | 'layout'>>) => void
-  removeCustomSection: (id: string) => void
-  addCustomSectionImage: (id: string, dataUrl: string, caption?: string) => void
-  removeCustomSectionImage: (id: string, imageId: string) => void
-  updateCustomSectionImageCaption: (id: string, imageId: string, caption: string) => void
 
   setActiveSection: (id: string | null) => void
   setPreviewZoom: (zoom: number) => void
@@ -137,41 +131,15 @@ export const useReportStore = create<ReportStore>()(
           },
         })),
 
-      addSection: (type, label) =>
-        set((state) => {
-          const id = `section-${type}-${uid()}`
-          const section = {
-            id,
-            type,
-            visible: true,
-            label: label ?? SECTION_LABELS[type],
-            showHeading: type !== 'photo',
-            order: state.report.sections.length,
-          }
-          return {
-            report: {
-              ...state.report,
-              sections: [...state.report.sections, section],
-              updatedAt: new Date().toISOString(),
-            },
-            activeSectionId: id,
-          }
-        }),
-
       removeSection: (id) =>
-        set((state) => {
-          const section = state.report.sections.find((s) => s.id === id)
-          const sections = state.report.sections.filter((s) => s.id !== id)
-          let customSections = state.report.customSections
-          if (section?.type === 'custom' && section.id.startsWith('section-custom-')) {
-            const customId = section.id.replace('section-custom-', '')
-            customSections = state.report.customSections.filter((c) => c.id !== customId)
-          }
-          return {
-            report: { ...state.report, sections, customSections, updatedAt: new Date().toISOString() },
-            activeSectionId: state.activeSectionId === id ? null : state.activeSectionId,
-          }
-        }),
+        set((state) => ({
+          report: {
+            ...state.report,
+            sections: state.report.sections.filter((s) => s.id !== id),
+            updatedAt: new Date().toISOString(),
+          },
+          activeSectionId: state.activeSectionId === id ? null : state.activeSectionId,
+        })),
 
       toggleSectionVisibility: (id) =>
         set((state) => ({
@@ -183,6 +151,23 @@ export const useReportStore = create<ReportStore>()(
             updatedAt: new Date().toISOString(),
           },
         })),
+
+      updateSectionLabel: (id, label) =>
+        set((state) => {
+          const trimmed = label.trim()
+          const sections = state.report.sections.map((s) => {
+            if (s.id !== id) return s
+            const next = trimmed || SECTION_LABELS[s.type] || s.label
+            return { ...s, label: next }
+          })
+          return {
+            report: {
+              ...state.report,
+              sections,
+              updatedAt: new Date().toISOString(),
+            },
+          }
+        }),
 
       toggleSectionHeading: (id) =>
         set((state) => ({
@@ -359,93 +344,6 @@ export const useReportStore = create<ReportStore>()(
             ...state.report,
             pressCoverage: state.report.pressCoverage.map((p) =>
               p.id === id ? { ...p, ...updates } : p
-            ),
-            updatedAt: new Date().toISOString(),
-          },
-        })),
-
-      addCustomSection: (title, layout) =>
-        set((state) => {
-          const id = uid()
-          const sectionId = `section-custom-${id}`
-          const customSection: CustomSection = { id, title, content: '', layout, images: [] }
-          return {
-            report: {
-              ...state.report,
-              customSections: [...state.report.customSections, customSection],
-              sections: [
-                ...state.report.sections,
-                {
-                  id: sectionId,
-                  type: 'custom' as SectionType,
-                  visible: true,
-                  label: title,
-                  showHeading: true,
-                  order: state.report.sections.length,
-                },
-              ],
-              updatedAt: new Date().toISOString(),
-            },
-            activeSectionId: sectionId,
-          }
-        }),
-
-      updateCustomSection: (id, updates) =>
-        set((state) => ({
-          report: {
-            ...state.report,
-            customSections: state.report.customSections.map((c) =>
-              c.id === id ? { ...c, ...updates } : c
-            ),
-            sections: state.report.sections.map((s) =>
-              s.id === `section-custom-${id}` && updates.title
-                ? { ...s, label: updates.title }
-                : s
-            ),
-            updatedAt: new Date().toISOString(),
-          },
-        })),
-
-      removeCustomSection: (id) =>
-        set((state) => ({
-          report: {
-            ...state.report,
-            customSections: state.report.customSections.filter((c) => c.id !== id),
-            sections: state.report.sections.filter((s) => s.id !== `section-custom-${id}`),
-            updatedAt: new Date().toISOString(),
-          },
-        })),
-
-      addCustomSectionImage: (id, dataUrl, caption) =>
-        set((state) => ({
-          report: {
-            ...state.report,
-            customSections: state.report.customSections.map((c) =>
-              c.id === id ? { ...c, images: [...c.images, { id: uid(), dataUrl, caption }] } : c
-            ),
-            updatedAt: new Date().toISOString(),
-          },
-        })),
-
-      removeCustomSectionImage: (id, imageId) =>
-        set((state) => ({
-          report: {
-            ...state.report,
-            customSections: state.report.customSections.map((c) =>
-              c.id === id ? { ...c, images: c.images.filter((img) => img.id !== imageId) } : c
-            ),
-            updatedAt: new Date().toISOString(),
-          },
-        })),
-
-      updateCustomSectionImageCaption: (id, imageId, caption) =>
-        set((state) => ({
-          report: {
-            ...state.report,
-            customSections: state.report.customSections.map((c) =>
-              c.id === id
-                ? { ...c, images: c.images.map((img) => (img.id === imageId ? { ...img, caption } : img)) }
-                : c
             ),
             updatedAt: new Date().toISOString(),
           },

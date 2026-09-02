@@ -8,6 +8,10 @@
 - Never claim a PDF/DOCX page layout is correct without the user seeing it.
   Verify exports structurally (XML strings, issue arrays, file writers) and hand
   visual confirmation to the user.
+- Do not present my own test runs, byte-size/byte-diff checks, or "issues: []"
+  console output as proof a feature works. My self-tests use non-default test
+  data and cannot validate real behavior. Export correctness must be confirmed
+  by the user opening the generated DOCX/PDF.
 
 ## Commands
 

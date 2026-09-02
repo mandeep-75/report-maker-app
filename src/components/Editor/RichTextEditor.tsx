@@ -50,13 +50,13 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
 
   const btn = (active: boolean) =>
     cn(
-      'p-1.5 rounded text-text-muted hover:bg-surface-alt hover:text-text cursor-pointer',
-      active && 'bg-surface-alt text-primary'
+      'p-1.5 rounded-md text-text-muted transition-colors hover:bg-surface-alt hover:text-text cursor-pointer focus-ring',
+      active && 'bg-primary-soft text-primary'
     )
 
   return (
-    <div className={cn('flex flex-col rounded border border-border bg-surface', className)}>
-      <div className="flex flex-wrap items-center gap-0.5 border-b border-border p-1.5">
+    <div className={cn('flex flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-shadow focus-within:border-primary/50 focus-within:shadow-card', className)}>
+      <div className="flex flex-wrap items-center gap-0.5 border-b border-border bg-surface-alt/40 p-1.5">
         <button className={btn(editor.isActive('bold'))} onClick={() => editor.chain().focus().toggleBold().run()} title="Bold">
           <Bold className="h-4 w-4" />
         </button>

@@ -76,13 +76,13 @@ export function PreviewPanel() {
   return (
     <div className="flex h-full flex-col bg-surface-alt">
       <div className="flex items-center justify-between border-b border-border px-3 py-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-text-muted">
           Preview
         </span>
         <div className="flex items-center gap-1">
           <button
             onClick={() => setPage(clampPage(page - 1))}
-            className="rounded p-1 text-text-muted hover:bg-surface-alt hover:text-text cursor-pointer"
+            className="rounded-md p-1 text-text-muted transition-colors hover:bg-surface-dark/60 hover:text-text cursor-pointer"
             title="Previous page"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -92,7 +92,7 @@ export function PreviewPanel() {
           </span>
           <button
             onClick={() => setPage(clampPage(page + 1))}
-            className="rounded p-1 text-text-muted hover:bg-surface-alt hover:text-text cursor-pointer"
+            className="rounded-md p-1 text-text-muted transition-colors hover:bg-surface-dark/60 hover:text-text cursor-pointer"
             title="Next page"
           >
             <ChevronRight className="h-4 w-4" />
@@ -100,7 +100,7 @@ export function PreviewPanel() {
           <span className="mx-1 h-4 w-px bg-border" />
           <button
             onClick={() => setZoom(zoom - 0.1)}
-            className="rounded p-1 text-text-muted hover:bg-surface-alt hover:text-text cursor-pointer"
+            className="rounded-md p-1 text-text-muted transition-colors hover:bg-surface-dark/60 hover:text-text cursor-pointer"
             title="Zoom out"
           >
             <ZoomOut className="h-4 w-4" />
@@ -108,12 +108,12 @@ export function PreviewPanel() {
           <span className="w-10 text-center text-xs text-text-muted">{Math.round(zoom * 100)}%</span>
           <button
             onClick={() => setZoom(zoom + 0.1)}
-            className="rounded p-1 text-text-muted hover:bg-surface-alt hover:text-text cursor-pointer"
+            className="rounded-md p-1 text-text-muted transition-colors hover:bg-surface-dark/60 hover:text-text cursor-pointer"
             title="Zoom in"
           >
             <ZoomIn className="h-4 w-4" />
           </button>
-          <span className="ml-2 rounded bg-surface px-2 py-0.5 text-[10px] text-text-muted">
+          <span className="ml-2 rounded-md border border-border bg-surface px-2 py-0.5 text-[10px] font-medium text-text-muted">
             A4 · Portrait
           </span>
         </div>

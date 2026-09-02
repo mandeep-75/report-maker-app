@@ -5,7 +5,6 @@ import {
   DEFAULT_SECTION_ORDER,
   SECTION_LABELS,
   GalleryLayout,
-  CertificateLayout,
 } from './reportSchema'
 
 export function createDefaultEventInfo(): Report['eventInfo'] {
@@ -52,29 +51,17 @@ export function createDefaultReport(): Report {
     conclusion: '',
     organizedBy: '',
     snapshots: [],
-    snapshotLayout: '6',
+    snapshotLayout: '4',
     certificates: [],
     certificateLayout: '2',
     pressCoverage: [],
-    customSections: [],
   }
 }
 
-export const GALLERY_LAYOUT_OPTIONS: { value: GalleryLayout; label: string }[] = [
-  { value: '1', label: '1 image' },
-  { value: '2', label: '2 images' },
-  { value: '3', label: '3 images' },
-  { value: '4', label: '4 images' },
-  { value: '6', label: '6 images' },
-  { value: 'large-small', label: 'Large + small' },
-  { value: 'full', label: 'Full page' },
-]
-
-export const CERTIFICATE_LAYOUT_OPTIONS: { value: CertificateLayout; label: string }[] = [
+export const IMAGE_LAYOUT_OPTIONS: { value: GalleryLayout; label: string }[] = [
   { value: '1', label: '1 per page' },
   { value: '2', label: '2 per page' },
   { value: '4', label: '4 per page' },
-  { value: '6', label: '6 per page' },
 ]
 
 export type TemplateCategory =
@@ -127,8 +114,7 @@ interface TemplateConfig {
   sectionOrder?: SectionType[]
   hiddenSections?: SectionType[]
   snapshotLayout?: GalleryLayout
-  certificateLayout?: CertificateLayout
-  customSections?: { title: string; content: string; layout: 'text' | 'list' | 'quote' }[]
+  certificateLayout?: GalleryLayout
 }
 
 export interface ReportTemplate {
@@ -153,20 +139,6 @@ function makeReport(cfg: TemplateConfig = {}): Report {
     showHeading: type !== 'photo',
     order: index,
   }))
-  if (cfg.customSections?.length) {
-    cfg.customSections.forEach((c, i) => {
-      const id = `tpl-custom-${i}`
-      r.customSections.push({ id, title: c.title, content: c.content, layout: c.layout, images: [] })
-      r.sections.push({
-        id: `section-custom-${id}`,
-        type: 'custom',
-        visible: true,
-        label: c.title,
-        showHeading: true,
-        order: r.sections.length,
-      })
-    })
-  }
   if (cfg.eventInfo) r.eventInfo = { ...r.eventInfo, ...cfg.eventInfo }
   if (cfg.resourcePersons) r.resourcePersons = cfg.resourcePersons
   if (cfg.brochure) r.brochure = { ...r.brochure, ...cfg.brochure }
@@ -205,12 +177,6 @@ const PARTITION_OUTCOMES = [
   'Promoted the values of peace, unity, compassion and communal harmony.',
   'Encouraged the younger generation to remember the experiences of Partition and learn meaningful lessons from history.',
 ]
-
-const PARTITION_HIGHLIGHTS = `<h2>Expert Lecture</h2><p>An informative and enlightening lecture was delivered by Ms. Anurada from Swami Premanand Mahavidyalaya, Mukerian. She discussed the historical circumstances surrounding the Partition and elaborated on the experiences of people who faced displacement, separation, suffering and loss during this period, focusing on the human dimension of Partition and its lasting social and emotional impact.</p>
-<h2>National Quiz</h2><p>Students were encouraged to participate in the “National Quiz on Partition Horrors Remembrance Day 2026”, organised through MyGov and the Ministry of Culture. The quiz provided an additional learning opportunity, enhanced students’ understanding of the historical significance of Partition, and resulted in Certificates of Participation for participating students.</p>
-<h2>Values and Awareness</h2><p>The programme emphasised the values of peace, compassion, communal harmony, unity and mutual understanding. Students were encouraged to reflect on the consequences of division and violence and to contribute towards a peaceful and harmonious society.</p>
-<h2>Participation</h2><p>The programme witnessed active participation by students and faculty members. The hybrid mode of organisation facilitated wider participation and engagement, and the lecture, awareness activities and National Quiz together provided a meaningful educational experience.</p>
-<h2>Closing Message</h2><p>The event concluded with the message “Never Forget, Always Remember”, honouring the resilience of people affected by Partition and reaffirming the importance of peace, unity and harmony for future generations.</p>`
 
 const SEMINAR_SUMMARY = `The Department of History, Khalsa College Garhdiwala, organised a National Seminar on the Indian Freedom Struggle to acquaint students with the rich legacy of India’s independence movement. The seminar was held in the Seminar Hall of the college and witnessed enthusiastic participation from students and faculty members.
 
@@ -301,7 +267,7 @@ export const TEMPLATES: ReportTemplate[] = [
       'Complete sample report with cover, resource person, summary, outcomes, photo gallery, certificates and press coverage. The reusable structure for most college events.',
     category: 'academic',
     cover: { title: 'REPORT COVER', subtitle: 'EVENT TITLE', college: 'COLLEGE NAME', from: '#7c5cff', to: '#4f8cff' },
-    included: ['Cover', 'Event Information', 'Resource Person', 'Theme', 'Photo', 'Brochure', 'Summary', 'Programme Highlights', 'Key Outcomes', 'Conclusion', 'Organised By', 'Snapshots', 'Certificates', 'Press Coverage'],
+    included: ['Cover', 'Event Information', 'Resource Person', 'Theme', 'Photo', 'Brochure', 'Summary', 'Key Outcomes', 'Conclusion', 'Organised By', 'Snapshots', 'Certificates', 'Press Coverage'],
     build: () =>
       makeReport({
         eventInfo: {
@@ -338,13 +304,6 @@ export const TEMPLATES: ReportTemplate[] = [
         outcomes: PARTITION_OUTCOMES,
         conclusion: PARTITION_CONCLUSION,
         organizedBy: 'Department of History\nKhalsa College Garhdiwala',
-        customSections: [
-          {
-            title: 'Programme Highlights',
-            content: PARTITION_HIGHLIGHTS,
-            layout: 'text',
-          },
-        ],
       }),
   },
   {
@@ -629,18 +588,25 @@ export function mergeReport(input: unknown): Report | null {
     ...src,
     eventInfo: { ...base.eventInfo, ...(src.eventInfo ?? {}) },
     sections: Array.isArray(src.sections)
-      ? src.sections.map((s, i) => ({
-          ...base.sections[i % base.sections.length],
-          ...s,
-          order: typeof s.order === 'number' ? s.order : i,
-        }))
+      ? src.sections.map((s, i) => {
+          const baseSec = base.sections[i % base.sections.length]
+          const label = typeof (s as { label?: unknown }).label === 'string'
+            && (s as { label?: string }).label!.trim()
+            ? (s as { label: string }).label.trim()
+            : SECTION_LABELS[(s as { type?: SectionType }).type ?? baseSec.type] ?? baseSec.label
+          return {
+            ...baseSec,
+            ...s,
+            label,
+            order: typeof s.order === 'number' ? s.order : i,
+          }
+        })
       : base.sections,
     resourcePersons: Array.isArray(src.resourcePersons) ? src.resourcePersons : base.resourcePersons,
     outcomes: Array.isArray(src.outcomes) ? src.outcomes : base.outcomes,
     snapshots: Array.isArray(src.snapshots) ? src.snapshots : base.snapshots,
     certificates: Array.isArray(src.certificates) ? src.certificates : base.certificates,
     pressCoverage: Array.isArray(src.pressCoverage) ? src.pressCoverage : base.pressCoverage,
-    customSections: Array.isArray(src.customSections) ? src.customSections : base.customSections,
     updatedAt: new Date().toISOString(),
   }
   return merged

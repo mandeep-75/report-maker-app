@@ -43,7 +43,7 @@ export function Toolbar({ onBack }: { onBack?: () => void }) {
         {onBack && (
           <button
             onClick={onBack}
-            className="mr-1 flex items-center gap-1 rounded px-2 py-1 text-sm text-text-muted hover:bg-surface-alt hover:text-text cursor-pointer"
+            className="mr-1 flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-text-muted transition-colors hover:bg-surface-alt hover:text-text cursor-pointer"
           >
             ← Back
           </button>
@@ -66,7 +66,7 @@ export function Toolbar({ onBack }: { onBack?: () => void }) {
           href="https://www.ilovepdf.com"
           target="_blank"
           rel="noreferrer"
-          className="flex items-center gap-1 rounded px-2 py-1 text-sm text-text-muted hover:bg-surface-alt hover:text-text cursor-pointer"
+          className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-text-muted transition-colors hover:bg-surface-alt hover:text-text cursor-pointer"
           title="Convert, merge or compress your exported files"
         >
           <ExternalLink className="h-4 w-4" /> iLovePDF

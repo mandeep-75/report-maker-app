@@ -48,25 +48,6 @@ const SUMMARY_HTML = `
 <p>The programme emphasised learning from history and nurturing the values of peace, compassion, communal harmony, unity and mutual understanding in the younger generation.</p>
 `
 
-const HIGHLIGHTS_HTML = `
-<h2>Expert Lecture</h2>
-<p>An informative and enlightening lecture was delivered by Ms. Anurada from Swami Premanand Mahavidyalaya, Mukerian, covering the human dimension of Partition and its lasting social and emotional impact.</p>
-<h2>National Quiz</h2>
-<p>Students participated in the National Quiz on Partition Horrors Remembrance Day, receiving Certificates of Participation from the Ministry of Culture and MyGov.</p>
-<h2>Values &amp; Awareness</h2>
-<p>The programme reinforced values of peace, compassion, communal harmony, unity and mutual understanding among participants.</p>
-`
-
-const SCHEDULE_TABLE = `
-<table><thead><tr><th>Time</th><th>Activity</th><th>Venue</th></tr></thead>
-<tbody><tr><td>11:00 AM</td><td>Welcome &amp; Introduction</td><td>Seminar Hall</td></tr>
-<tr><td>11:30 AM</td><td>Expert Lecture</td><td>Seminar Hall</td></tr>
-<tr><td>1:00 PM</td><td>National Quiz</td><td>Computer Lab</td></tr>
-<tr><td>2:00 PM</td><td>Vote of Thanks</td><td>Seminar Hall</td></tr></tbody></table>
-`
-
-const QUOTES = `<blockquote>The event concluded with a powerful message of remembering the past, honouring resilience and working for a peaceful and harmonious future.</blockquote>`
-
 /* ------------------------------ build report --------------------------- */
 
 function buildReport() {
@@ -92,25 +73,8 @@ function buildReport() {
     'snapshots',
     'certificates',
     'press-coverage',
-    'custom',
   ]
-  const customMeta = {
-  'cs-1': 'Programme Highlights',
-  'cs-2': 'Schedule',
-  'cs-3': 'Closing Words',
-  'cs-4': 'Photo Booth',
-}
 const sections = types.map(section)
-  for (const [cid, ctitle] of Object.entries(customMeta)) {
-    sections.push({
-      id: `section-custom-${cid}`,
-      type: 'custom',
-      visible: true,
-      label: ctitle,
-      showHeading: true,
-      order: sections.length,
-    })
-  }
 
   return {
     id: 'test-report',
@@ -181,18 +145,12 @@ const sections = types.map(section)
       item(I.square, 'Closing ceremony'),
       item(I.tiny, 'Low-res notice board'),
     ],
-    snapshotLayout: '6',
+    snapshotLayout: '4',
     certificates: [item(I.cert, 'Participation Award'), item(I.cert, 'Merit Certificate'), item(I.cert, 'Appreciation'), item(I.cert, 'Certificate of Participation')],
     certificateLayout: '4',
     pressCoverage: [
       { id: 'pc-1', dataUrl: I.press, publication: 'The Tribune', date: '16 August 2026', caption: 'Coverage in the local daily' },
       { id: 'pc-2', dataUrl: I.press, publication: 'Daily Newsline', date: '17 August 2026', caption: 'Regional edition report' },
-    ],
-    customSections: [
-      { id: 'cs-1', title: 'Programme Highlights', content: HIGHLIGHTS_HTML, layout: 'text', images: [] },
-      { id: 'cs-2', title: 'Schedule', content: SCHEDULE_TABLE, layout: 'table', images: [] },
-      { id: 'cs-3', title: 'Closing Words', content: QUOTES, layout: 'quote', images: [] },
-      { id: 'cs-4', title: 'Photo Booth', content: '', layout: 'gallery', images: [item(I.square, 'Booth snap'), item(I.portrait, 'Group photo')] },
     ],
   }
 }

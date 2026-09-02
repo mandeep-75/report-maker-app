@@ -36,9 +36,11 @@ export function EditorWorkspace({ onBack }: { onBack: () => void }) {
         </div>
         <div
           onMouseDown={onMouseDown}
-          className="w-1.5 cursor-col-resize bg-border transition-colors hover:bg-primary"
+          className="group relative flex w-1.5 cursor-col-resize items-center justify-center bg-border transition-colors hover:bg-primary/60"
           title="Drag to resize"
-        />
+        >
+          <span className="absolute h-10 w-1 rounded-full bg-transparent transition-colors group-hover:bg-primary" />
+        </div>
         <div className="flex-1 overflow-hidden">
           <PreviewPanel />
         </div>

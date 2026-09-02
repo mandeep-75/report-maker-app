@@ -13,6 +13,7 @@ import {
   ImageItem,
   PressCoverageItem,
   ResourcePerson,
+  GalleryLayout,
 } from '../data/reportSchema'
 import { DocBlock, DocDocument, DocIssue, DocImage, DocImageGrid, DocTextRun } from './model'
 import {
@@ -28,20 +29,6 @@ import {
 } from './layout'
 import { fitImage, ImageInfo, inspectImage, prepareImage } from './images'
 import { htmlToDoc, htmlToPlainText } from './html'
-
-const SECTION_TITLES: Record<string, string> = {
-  theme: 'Theme',
-  'resource-person': 'Resource Person',
-  brochure: 'Brochure',
-  photo: 'Photo',
-  summary: 'Summary',
-  outcomes: 'Key Outcomes',
-  conclusion: 'Conclusion',
-  'organized-by': 'Organised By',
-  snapshots: 'Snapshots',
-  certificates: 'Certificates',
-  'press-coverage': 'Press Coverage',
-}
 
 const uidSeq = { n: 0 }
 const uid = (p = 'b') => `${p}-${++uidSeq.n}`
@@ -82,13 +69,6 @@ function isEmpty(section: Section, report: Report): boolean {
       return !report.pressCoverage.some((p) => p.dataUrl)
     case 'photo':
       return !report.photo.dataUrl && !report.photo.caption.trim()
-    case 'custom': {
-      const custom = report.customSections.find((c) => `section-custom-${c.id}` === section.id)
-      if (!custom) return true
-      const hasImages = custom.images.some((i) => i.dataUrl)
-      if (custom.layout === 'gallery' || custom.layout === 'photo') return !hasImages
-      return !custom.title.trim() && !htmlToPlainText(custom.content)
-    }
     default:
       return false
   }
@@ -105,14 +85,9 @@ function uniqueImageSources(report: Report): string[] {
   report.snapshots.forEach((s) => add(s.dataUrl))
   report.certificates.forEach((c) => add(c.dataUrl))
   report.pressCoverage.forEach((p) => add(p.dataUrl))
-  report.customSections.forEach((c) => c.images.forEach((i) => add(i.dataUrl)))
-  // Images embedded inline in rich-text HTML (summary / conclusion / custom
-  // section content) so their aspect ratio is available for layout.
-  const htmls = [
-    report.summary,
-    report.conclusion,
-    ...report.customSections.map((c) => c.content),
-  ]
+  // Images embedded inline in rich-text HTML (summary / conclusion) so their
+  // aspect ratio is available for layout.
+  const htmls = [report.summary, report.conclusion]
   const srcRe = /src="([^"]*)"/g
   for (const h of htmls) {
     if (!h) continue
@@ -164,40 +139,6 @@ function equalGrid(
           slotWidthMm: slotW,
         }
       }),
-    })
-  }
-  return { kind: 'grid', id: uid('grid'), rows }
-}
-
-/** "Large + small" layout: ⅔ width feature with two ⅓-width images stacked. */
-function featuredGrid(
-  images: ImageItem[],
-  sizes: Map<string, ImageInfo>,
-  ctx: LayoutContext
-): DocImageGrid | null {
-  const valid = images.filter((i) => sizes.has(i.dataUrl))
-  if (!valid.length) return null
-  const bigSlot = (CONTENT.widthMm - GRID_GAP_MM) * (2 / 3)
-  const smallSlot = CONTENT.widthMm - GRID_GAP_MM - bigSlot
-  const maxRowH = gridRowMaxHeightMm(ctx.compact)
-  const rows = []
-  for (let i = 0; i < valid.length; i += 3) {
-    const group = valid.slice(i, i + 3)
-    if (!group.length) break
-    const make = (img: ImageItem, slot: number) => {
-      const info = sizes.get(img.dataUrl)!
-      const { widthMm, heightMm } = fitImage(info.width, info.height, slot, maxRowH)
-      return {
-        id: img.id || uid('c'),
-        src: img.dataUrl,
-        caption: img.caption,
-        widthMm,
-        heightMm,
-        slotWidthMm: slot,
-      }
-    }
-    rows.push({
-      cells: [make(group[0], bigSlot), ...group.slice(1).map((g) => make(g, smallSlot))],
     })
   }
   return { kind: 'grid', id: uid('grid'), rows }
@@ -304,7 +245,7 @@ export async function buildDocument(report: Report | null, options: BuildOptions
     addSection(section)
   }
 
-  // 3. Resolve any html-parsed image blocks (summary/conclusion/custom prose).
+  // 3. Resolve any html-parsed image blocks (summary/conclusion prose).
   resolveInlineImages(blocks, sizes, ctx)
 
   // 4. Downsample oversized images before embedding (browser only).
@@ -387,7 +328,7 @@ function renderSection(
   const out: DocBlock[] = []
   const titleOf = (): string | null => {
     if (section.showHeading === false) return null
-    const t = SECTION_TITLES[section.type] ?? section.label
+    const t = (section.label ?? '').trim()
     return t || null
   }
 
@@ -406,7 +347,7 @@ function renderSection(
       return out
     }
     case 'resource-person':
-      return resourcePersonBlocks(report.resourcePersons, sizes, ctx)
+      return resourcePersonBlocks(report.resourcePersons, titleOf(), sizes, ctx)
     case 'brochure': {
       const t = titleOf()
       if (t) out.push(heading(t, 1))
@@ -493,35 +434,11 @@ function renderSection(
       return out
     }
     case 'snapshots':
-      return snapshotBlocks(report, sizes, ctx)
+      return snapshotBlocks(report, titleOf(), sizes, ctx)
     case 'certificates':
-      return certificateBlocks(report, sizes, ctx)
+      return certificateBlocks(report, titleOf(), sizes, ctx)
     case 'press-coverage':
-      return pressBlocks(report.pressCoverage, sizes)
-    case 'custom': {
-      const custom = report.customSections.find((c) => `section-custom-${c.id}` === section.id)
-      if (!custom) return []
-      const t = titleOf()
-      if (t) out.push(heading(t, 1))
-      if (custom.layout === 'gallery') {
-        const grid = equalGrid(custom.images, 2, sizes, ctx)
-        if (grid) out.push(grid)
-      } else if (custom.layout === 'photo') {
-        for (const img of custom.images) {
-          if (!sizes.has(img.dataUrl)) continue
-          out.push(fullImageBlock(img.dataUrl, img.caption, sizes))
-        }
-      } else if (custom.layout === 'quote') {
-        const parsed = htmlToDoc(custom.content)
-        const quoteRuns = parsed.blocks
-          .map((b) => (b.kind === 'paragraph' || b.kind === 'quote' ? b.runs : []))
-          .flat()
-        if (quoteRuns.length) out.push({ kind: 'quote', id: uid('q'), runs: quoteRuns })
-      } else {
-        out.push(...parseHtml(custom.content, sizes))
-      }
-      return out
-    }
+      return pressBlocks(report.pressCoverage, titleOf(), sizes)
     default:
       issues.push({ level: 'warning', message: 'A section type was not recognised and was skipped.' })
       return []
@@ -530,11 +447,13 @@ function renderSection(
 
 function resourcePersonBlocks(
   persons: ResourcePerson[],
+  title: string | null,
   sizes: Map<string, ImageInfo>,
   ctx: LayoutContext
 ): DocBlock[] {
   const out: DocBlock[] = []
   const sp = spacing(ctx)
+  if (title) out.push(heading(title, 1))
   const photo = (p: ResourcePerson): DocImage | null => {
     if (!p.photo || !sizes.has(p.photo)) return null
     const info = sizes.get(p.photo)!
@@ -575,55 +494,29 @@ function resourcePersonBlocks(
   return out
 }
 
-function snapshotBlocks(
-  report: Report,
+function imageBlocks(
+  images: ImageItem[],
+  layout: GalleryLayout,
+  title: string | null,
   sizes: Map<string, ImageInfo>,
   ctx: LayoutContext
 ): DocBlock[] {
   const out: DocBlock[] = []
-  const visible = report.snapshots.filter((s) => s.dataUrl)
+  const visible = images.filter((i) => i.dataUrl)
   if (!visible.length) return out
-  out.push(heading('Snapshots', 1))
-  const layout = report.snapshotLayout
-  if (layout === 'large-small') {
-    const grid = featuredGrid(visible, sizes, ctx)
-    if (grid) out.push(grid)
-} else if (layout === 'full' || layout === '1') {
-        // Flow each image full-width, no forced page breaks.
-        for (const img of visible) {
-          if (!sizes.has(img.dataUrl)) continue
-          out.push(fullImageBlock(img.dataUrl, img.caption, sizes))
-        }
-  } else {
-    const cols = layout === '4' ? 2 : layout === '6' ? 3 : Number(layout) || 2
-    const grid = equalGrid(visible, cols, sizes, ctx)
-    if (grid) out.push(grid)
-  }
-  return out
-}
-
-function certificateBlocks(
-  report: Report,
-  sizes: Map<string, ImageInfo>,
-  ctx: LayoutContext
-): DocBlock[] {
-  const out: DocBlock[] = []
-  const visible = report.certificates.filter((c) => c.dataUrl)
-  if (!visible.length) return out
-  out.push(heading('Certificates', 1))
-  if (report.certificateLayout === '1') {
-    // "1 per page": flow each certificate at full content width, centered,
-    // one per page.
-    visible.forEach((c, i) => {
-      const info = sizes.get(c.dataUrl)
+  if (title) out.push(heading(title, 1))
+  if (layout === '1') {
+    // "1 per page": flow each image at full content width, centered, one per page.
+    visible.forEach((img, i) => {
+      const info = sizes.get(img.dataUrl)
       if (!info) return
       if (i > 0) out.push({ kind: 'pageBreak', id: uid('pb') })
       const { widthMm, heightMm } = fitImage(info.width, info.height, CONTENT.widthMm, CONTENT.heightMm)
       out.push({
         kind: 'image',
         id: uid('img'),
-        src: c.dataUrl,
-        caption: c.caption || undefined,
+        src: img.dataUrl,
+        caption: img.caption || undefined,
         widthMm,
         heightMm,
         align: 'center',
@@ -632,20 +525,39 @@ function certificateBlocks(
     })
     return out
   }
-  const cols = report.certificateLayout === '4' ? 2 : Number(report.certificateLayout) || 3
+  const cols = 2
   const grid = equalGrid(visible, cols, sizes, ctx)
   if (grid) out.push(grid)
   return out
 }
 
+function snapshotBlocks(
+  report: Report,
+  title: string | null,
+  sizes: Map<string, ImageInfo>,
+  ctx: LayoutContext
+): DocBlock[] {
+  return imageBlocks(report.snapshots, report.snapshotLayout, title, sizes, ctx)
+}
+
+function certificateBlocks(
+  report: Report,
+  title: string | null,
+  sizes: Map<string, ImageInfo>,
+  ctx: LayoutContext
+): DocBlock[] {
+  return imageBlocks(report.certificates, report.certificateLayout, title, sizes, ctx)
+}
+
 function pressBlocks(
   items: PressCoverageItem[],
+  title: string | null,
   sizes: Map<string, ImageInfo>
 ): DocBlock[] {
   const out: DocBlock[] = []
   const visible = items.filter((i) => i.dataUrl)
   if (!visible.length) return out
-  out.push(heading('Press Coverage', 1))
+  if (title) out.push(heading(title, 1))
   visible.forEach((p, i) => {
     const info = sizes.get(p.dataUrl)
     if (info) {

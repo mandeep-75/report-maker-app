@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { Plus, Upload } from 'lucide-react'
+import { Plus, Upload, FileText, Heart } from 'lucide-react'
 import { TemplateBrowser } from '../components/TemplateBrowser'
 import { RecentReports } from '../components/RecentReports'
 import { RecentMeta } from '../utils/storage'
@@ -31,17 +31,19 @@ export function HomeScreen({
   return (
     <div className="h-full overflow-auto">
       <div className="mx-auto max-w-6xl px-8 py-10">
-        <h1 className="text-2xl font-bold text-text">Create professional reports</h1>
-        <p className="mt-1 text-sm text-text-muted">
-          Start from a ready-made template, fill in your event, and export to PDF or DOCX.
-        </p>
+        <div className="mb-8">
+          <h1 className="text-[26px] font-bold tracking-tight text-text">Create professional reports</h1>
+          <p className="mt-1.5 text-sm text-text-muted">
+            Start from a ready-made template, fill in your event, and export to PDF or DOCX.
+          </p>
+        </div>
 
         <div className="mt-6 flex w-full max-w-xl gap-3">
           <button
             onClick={onNew}
-            className="accent-solid flex flex-1 items-center gap-3 rounded-2xl p-6 px-9 text-left text-white shadow-lg transition-opacity hover:opacity-90 cursor-pointer"
+            className="accent-solid flex flex-1 items-center gap-3 rounded-2xl p-6 pl-7 text-left text-primary-foreground shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card-hover hover:opacity-95 active:scale-[0.99] cursor-pointer"
           >
-            <div className="flex h-12 w-24 items-center justify-center rounded-xl bg-white/20 text-white">
+            <div className="flex h-12 w-24 items-center justify-center rounded-xl bg-white/20 text-primary-foreground">
               <Plus className="h-6 w-6" />
             </div>
             <div>
@@ -51,9 +53,9 @@ export function HomeScreen({
           </button>
           <button
             onClick={() => fileRef.current?.click()}
-            className="flex flex-1 items-center gap-3 rounded-2xl border border-border bg-surface p-6 text-left shadow-lg transition-colors hover:border-primary cursor-pointer"
+            className="flex flex-1 items-center gap-3 rounded-2xl border border-border bg-surface p-6 text-left shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-card-hover cursor-pointer"
           >
-            <div className="accent-solid flex h-12 w-20 items-center justify-center rounded-xl text-white">
+            <div className="accent-solid flex h-12 w-20 items-center justify-center rounded-xl text-primary-foreground shadow-sm">
               <Upload className="h-6 w-6" />
             </div>
             <div>
@@ -74,24 +76,59 @@ export function HomeScreen({
         />
 
         <section className="mt-10">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-muted">
+          <h2 className="mb-3.5 text-xs font-semibold uppercase tracking-wider text-text-muted">
             Templates
           </h2>
           <TemplateBrowser onUse={onUseTemplate} />
         </section>
 
         <section className="mt-10">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-muted">
+          <h2 className="mb-3.5 text-xs font-semibold uppercase tracking-wider text-text-muted">
             Recent Reports
           </h2>
           <RecentReports recent={recent} onOpen={onOpenRecent} onDelete={onDeleteRecent} />
         </section>
 
-        <section className="mt-10 rounded-xl border border-border bg-surface p-6">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-text-muted">
+        <section className="mt-10 rounded-2xl border border-primary/25 bg-gradient-to-r from-primary/10 via-surface to-surface p-6 shadow-card">
+          <div className="flex items-center gap-4">
+            <div className="accent-solid flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-primary-foreground shadow-sm">
+              <FileText className="h-7 w-7" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="flex items-center gap-2 text-base font-semibold text-text">
+                <a
+                  href="https://www.ilovepdf.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  I love PDF
+                </a>
+                <Heart className="h-4 w-4 fill-danger text-danger" />
+              </h2>
+              <p className="mt-1 text-sm text-text-muted">
+                Pixel-perfect PDF export, straight from your event report — paragraphs,
+                tables, images and galleries, all laid out exactly as designed.
+                Powered by
+                <a
+                  href="https://www.ilovepdf.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-text hover:underline"
+                >
+                  iLovePDF
+                </a>
+                — merge, split, compress, convert, and edit PDFs with ease.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-10 rounded-xl border border-border bg-surface p-6 shadow-card">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted">
             About the Developer
           </h2>
-          <p className="mt-2 text-sm text-text">
+          <p className="mt-2.5 text-sm leading-relaxed text-text">
             Report Maker was built with care to help educators create polished, professional
             event reports quickly. Made by <span className="font-semibold text-text">Mandeep</span>.
           </p>
@@ -100,7 +137,7 @@ export function HomeScreen({
               href="https://mandeep-75.github.io/Mandeep.dev/"
               target="_blank"
               rel="noopener noreferrer"
-              className="accent-solid flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="accent-solid flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-90 active:scale-[0.98]"
             >
               Portfolio ↗
             </a>
@@ -108,7 +145,7 @@ export function HomeScreen({
               href="https://github.com/mandeep-75"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-semibold text-text hover:bg-surface-alt"
+              className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-semibold text-text transition-colors hover:bg-surface-alt hover:border-border-dark"
             >
               GitHub ↗
             </a>
@@ -116,7 +153,7 @@ export function HomeScreen({
               href="https://www.instagram.com/mandeep.xdev/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-semibold text-text hover:bg-surface-alt"
+              className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-semibold text-text transition-colors hover:bg-surface-alt hover:border-border-dark"
             >
               Instagram ↗
             </a>

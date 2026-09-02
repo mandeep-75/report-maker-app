@@ -45,11 +45,11 @@ export function ToastContainer() {
         return (
           <div
             key={t.id}
-            className="flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2.5 shadow-lg text-sm"
+            className="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-4 py-3 shadow-dialog text-sm animate-fade-up"
           >
             <Icon className={`h-4 w-4 ${colors[t.type]}`} />
             <span className="text-text">{t.message}</span>
-            <button onClick={() => dismiss(t.id)} className="ml-2 text-text-muted hover:text-text cursor-pointer">
+            <button onClick={() => dismiss(t.id)} className="ml-2 rounded p-0.5 text-text-muted transition-colors hover:bg-surface-alt hover:text-text cursor-pointer">
               <X className="h-3.5 w-3.5" />
             </button>
           </div>

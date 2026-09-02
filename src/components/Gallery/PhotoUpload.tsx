@@ -30,8 +30,8 @@ export function PhotoUpload({
       }}
       onDragLeave={() => setDrag(false)}
       onDrop={onDrop}
-      className={`flex w-full flex-col items-center gap-2 rounded-lg border-2 border-dashed py-8 text-text-muted hover:border-primary hover:text-primary cursor-pointer ${
-        drag ? 'border-primary bg-primary/5 text-primary' : 'border-border'
+      className={`flex w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed py-8 text-text-muted transition-all duration-200 hover:border-primary/60 hover:bg-primary-soft/40 hover:text-primary cursor-pointer ${
+        drag ? 'border-primary bg-primary-soft text-primary' : 'border-border'
       }`}
     >
       <ImagePlus className="h-7 w-7" />

@@ -26,7 +26,7 @@ export function RecentReports({
 }) {
   if (recent.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-border bg-surface p-8 text-center text-sm text-text-muted">
+      <div className="rounded-xl border border-dashed border-border bg-surface p-10 text-center text-sm text-text-muted shadow-card">
         No reports yet. Create one from a template to see it here.
       </div>
     )
@@ -36,9 +36,9 @@ export function RecentReports({
       {recent.map((r) => (
         <div
           key={r.id}
-          className="flex items-center gap-3 rounded-xl border border-border bg-surface p-3 transition-colors hover:border-primary"
+          className="group flex items-center gap-3 rounded-xl border border-border bg-surface p-3 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-card-hover"
         >
-          <div className="accent-solid flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white">
+          <div className="accent-solid flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-primary-foreground shadow-sm">
             <FileText className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
@@ -47,14 +47,14 @@ export function RecentReports({
           </div>
           <button
             onClick={() => onDelete(r.id)}
-            className="rounded p-1.5 text-text-muted hover:bg-surface-alt hover:text-danger cursor-pointer"
+            className="rounded-lg p-1.5 text-text-muted transition-colors hover:bg-danger/10 hover:text-danger cursor-pointer"
             title="Delete"
           >
             <Trash2 className="h-4 w-4" />
           </button>
           <button
             onClick={() => onOpen(r.id)}
-            className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-text hover:bg-surface-alt cursor-pointer"
+            className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-text transition-all hover:border-primary hover:bg-primary hover:text-primary-foreground cursor-pointer"
           >
             Continue →
           </button>

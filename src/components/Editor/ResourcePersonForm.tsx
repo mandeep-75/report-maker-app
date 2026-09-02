@@ -18,12 +18,12 @@ export function ResourcePersonForm() {
         <p className="text-xs text-text-muted">No resource persons added yet.</p>
       )}
       {resourcePersons.map((p, i) => (
-        <div key={p.id} className="rounded-lg border border-border bg-surface-alt p-3">
-          <div className="mb-2 flex items-center justify-between">
+        <div key={p.id} className="rounded-xl border border-border bg-surface-alt/60 p-3.5 shadow-sm">
+          <div className="mb-2.5 flex items-center justify-between">
             <Badge>Person {i + 1}</Badge>
             <button
               onClick={() => removeResourcePerson(p.id)}
-              className="text-danger hover:text-danger-hover cursor-pointer"
+              className="rounded-md p-1 text-danger hover:bg-danger/10 transition-colors cursor-pointer"
               title="Remove"
             >
               <Trash2 className="h-4 w-4" />
@@ -36,7 +36,7 @@ export function ResourcePersonForm() {
                   <img
                     src={p.photo}
                     alt=""
-                    className="h-16 w-16 rounded-full object-cover border border-border"
+                    className="h-16 w-16 rounded-full object-cover border border-border shadow-sm"
                   />
                 ) : (
                   <div className="flex h-16 w-16 items-center justify-center rounded-full bg-surface border border-border text-text-muted">
@@ -45,7 +45,7 @@ export function ResourcePersonForm() {
                 )}
                 <button
                   onClick={() => pick((url) => updateResourcePerson(p.id, { photo: url }))}
-                  className="flex items-center gap-1 text-[10px] text-primary hover:underline cursor-pointer"
+                  className="flex items-center gap-1 text-[10px] font-medium text-primary hover:underline cursor-pointer"
                 >
                   <Upload className="h-3 w-3" /> Photo
                 </button>
