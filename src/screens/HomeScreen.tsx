@@ -129,7 +129,7 @@ export function HomeScreen({
           </h2>
           <p className="mt-2.5 text-sm leading-relaxed text-text">
             Report Maker was built with care to help educators create polished, professional
-            event reports quickly. Made by <span className="font-semibold text-text">Mandeep</span>.
+            event reports quickly. ꧁ Made by ꧂ ꕤ <span className="font-semibold text-text">Mandeep1322</span> ꕤ.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <a

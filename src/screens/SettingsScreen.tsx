@@ -64,7 +64,7 @@ export function SettingsScreen() {
             About
           </h2>
           <p className="mt-2.5 text-sm text-text">
-            Report Maker · Built by <span className="font-semibold text-text">Mandeep</span>
+            Report Maker · ꧁ Built by ꧂ ꕤ <span className="font-semibold text-text">Mandeep1322</span> ꕤ
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <a
