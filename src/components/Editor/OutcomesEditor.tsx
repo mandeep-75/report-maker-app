@@ -3,12 +3,22 @@ import { Input } from '../UI/Input'
 import { Button } from '../UI/Button'
 import { Trash2, Plus } from 'lucide-react'
 import { AIStubButton } from './AIStubButton'
+import { EVENT_SYSTEM, buildEventContext } from './eventContext'
 
 export function OutcomesEditor() {
   const outcomes = useReportStore((s) => s.report.outcomes)
   const addOutcome = useReportStore((s) => s.addOutcome)
   const updateOutcome = useReportStore((s) => s.updateOutcome)
   const removeOutcome = useReportStore((s) => s.removeOutcome)
+  const report = useReportStore((s) => s.report)
+  const context = `${EVENT_SYSTEM}\n\nEvent details:\n${buildEventContext(report.eventInfo)}`
+  const event = report.eventInfo.eventName.trim() || 'this event'
+  const theme = report.eventInfo.theme.trim()
+  const prompt = `List 5-6 concrete key outcomes achieved by the college event "${event}".` +
+    (theme ? ` The event's theme was "${theme}".` : '') +
+    ' Outcomes should be specific, measurable results (e.g., knowledge gained, skills developed, ' +
+    ' awareness raised, participation levels, collaborations formed). Return each outcome as a ' +
+    ' single self-contained sentence on its own line, with no numbering, bullets, or extra text.'
 
   return (
     <div className="flex h-full flex-col gap-3">
@@ -41,8 +51,8 @@ export function OutcomesEditor() {
         </Button>
         <AIStubButton
           label="Generate with AI"
-          context="You help educators write concise, professional event report sections."
-          prompt="List 4-6 key outcomes of a college event, one per line with no numbering or bullet characters. Just plain lines of text."
+          context={context}
+          prompt={prompt}
           onResult={(text) => {
             const lines = text
               .split('\n')

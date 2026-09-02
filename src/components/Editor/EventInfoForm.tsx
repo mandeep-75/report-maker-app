@@ -4,10 +4,16 @@ import { Textarea } from '../UI/Textarea'
 import { Select } from '../UI/Select'
 import { ResourcePersonForm } from './ResourcePersonForm'
 import { AIStubButton } from './AIStubButton'
+import { EVENT_SYSTEM, buildEventContext } from './eventContext'
 
 export function EventInfoForm() {
   const eventInfo = useReportStore((s) => s.report.eventInfo)
   const updateEventInfo = useReportStore((s) => s.updateEventInfo)
+  const context = `${EVENT_SYSTEM}\n\nEvent details:\n${buildEventContext(eventInfo)}`
+  const prompt = `Suggest one short, motivational tagline for the cover of a college event report.` +
+    (eventInfo.eventName.trim() ? ` The event is "${eventInfo.eventName.trim()}".` : '') +
+    (eventInfo.theme.trim() ? ` Its theme is "${eventInfo.theme.trim()}".` : '') +
+    ' The tagline should be inspirational, professional, and memorable. Return only the tagline text with no quotes or explanation.'
 
   return (
     <div className="flex flex-col gap-3">
@@ -92,12 +98,7 @@ export function EventInfoForm() {
         onChange={(e) => updateEventInfo({ tagline: e.target.value })}
         placeholder="A short motivational line for the cover"
       />
-      <AIStubButton
-        label="AI Suggest Tagline"
-        context={`Event: ${eventInfo.eventName || 'a college event'}. Theme: ${eventInfo.theme || 'unspecified'}.`}
-        prompt="Suggest one short, motivational tagline for an event report cover. Return only the tagline text, no quotes or explanation."
-        onResult={(text) => updateEventInfo({ tagline: text })}
-      />
+      <AIStubButton label="AI Suggest Tagline" context={context} prompt={prompt} onResult={(text) => updateEventInfo({ tagline: text })} />
       <div className="mt-2 border-t border-border pt-3">
         <h3 className="mb-2 text-sm font-semibold text-text">Resource Person</h3>
         <ResourcePersonForm />

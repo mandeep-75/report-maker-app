@@ -8,7 +8,7 @@ interface GenerateOptions {
   maxTokens?: number
 }
 
-export async function generateText({ apiKey, model, prompt, context, maxTokens = 1024 }: GenerateOptions): Promise<string> {
+export async function generateText({ apiKey, model, prompt, context, maxTokens = 2048 }: GenerateOptions): Promise<string> {
   if (!apiKey) throw new Error('API key not set. Add your OpenCode Zen key in Settings.')
 
   const messages = [
