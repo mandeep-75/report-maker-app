@@ -3,6 +3,7 @@ import { Input } from '../UI/Input'
 import { Textarea } from '../UI/Textarea'
 import { Select } from '../UI/Select'
 import { ResourcePersonForm } from './ResourcePersonForm'
+import { AIStubButton } from './AIStubButton'
 
 export function EventInfoForm() {
   const eventInfo = useReportStore((s) => s.report.eventInfo)
@@ -91,6 +92,7 @@ export function EventInfoForm() {
         onChange={(e) => updateEventInfo({ tagline: e.target.value })}
         placeholder="A short motivational line for the cover"
       />
+      <AIStubButton label="AI Suggest Tagline" />
       <div className="mt-2 border-t border-border pt-3">
         <h3 className="mb-2 text-sm font-semibold text-text">Resource Person</h3>
         <ResourcePersonForm />
