@@ -144,7 +144,7 @@ function CreditTag() {
       className="fixed bottom-3 right-7 text-xs font-medium text-gray-400 animate-fade-up"
       title="View portfolio"
     >
-      ꧁ Made by ꧂ ꕤ Mandeep1322 ꕤ
+      ꧁ Made by Mandeep
     </a>
   )
 }
